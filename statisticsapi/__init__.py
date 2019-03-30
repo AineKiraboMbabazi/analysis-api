@@ -4,7 +4,7 @@ from flask import Flask
 app = Flask(__name__)
 # app.config['JWT_SECRET_KEY']='this is my secret key'
 # jwt=JWTManager(app)
-# from .routes import user
+from .routes import users
 from .routes import associations
 # from .routes import auth
 
