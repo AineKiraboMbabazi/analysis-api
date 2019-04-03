@@ -1,4 +1,7 @@
 import datetime
+from passlib.hash import pbkdf2_sha256 as sha256
+from flask_jwt_extended import (
+    JWTManager, create_access_token, jwt_required, get_jwt_identity)
 import pymysql
 from flask import request, jsonify
 from validations import Validator
@@ -7,20 +10,21 @@ from ..models.associations import Association
 from .database import DatabaseConnection
 con = DatabaseConnection()
 
+def generate_hash(password):
+        return sha256.hash(password)
+
+
 
 class User_Controller:
-      
+    
     
     def create_user():
         """
             function to create a user
         """
-        # userid = get_jwt_identity()
-        # if not userid:
-        #     return jsonify({'msg': 'Missing Authorization Header'}), 401
-        
+
         request_data = request.get_json(force=True)
-        if len(request_data.keys()) != 5:
+        if len(request_data.keys()) != 8:
             return jsonify({"message": "Some fields are missing"}), 400
         
         associationId = request_data['associationId']
@@ -29,12 +33,27 @@ class User_Controller:
         status = 1
         user_group = request_data['user_group']
         user_role = request_data['user_role']
-        created_by=name
+        created_by = name
+        email = request_data['email']
+        password = request_data['password']
+        confirm_password = request_data['confirm_password']
         creation_date = datetime.date.today().strftime('%Y-%m-%d')
         validate_input = Validator()
+        if not (validate_input.validate_password(password)):
+            return jsonify({"message": "The password must be more than 8 characters"}),400
+        if password != confirm_password:
+            return jsonify({"message":"password mismatch"}),400
         if not (validate_input.validate_string_input(name)):
             return jsonify({"message": "name Field should\
-                            contain strings"}), 400
+                            contain strings "}), 400
+        if not (validate_input.validate_email(email)):
+            return jsonify({"message": "invalid email"}), 400
+        user = con.get_user_by_email(email)
+        
+        if  user:
+            return jsonify({"message": "User with that email already exists"}), 400
+        if not (validate_input.validate_email(email)):
+            return jsonify({"message":"The password you have created is weak"}),400
         if not (validate_input.validate_string_input(country)):
             return jsonify({"message": "location Field should\
                             contain strings"}), 400
@@ -44,54 +63,61 @@ class User_Controller:
             return jsonify({"message": "userid Field should contain strings"}), 400
         association = con.get_single_association(associationId)
         if (not association):
-            return jsonify({"message":"The association with that id doesnot exist"}),400
+            return jsonify({"message": "The association with that id doesnot exist"}), 400
+        encrpted_password=generate_hash(password)
         
-        user=User(associationId, name, status, country, user_group,user_role,created_by,creation_date).__dict__
-        con.add_user(user['associationId'], user['name'],user['status'], user['country'], user['user_group'],user['user_role'],user['created_by'],user['creation_date'])
+        user=User(associationId, name, status,email,encrpted_password, country, user_group,user_role,created_by,creation_date).__dict__
+        con.add_user(user['associationId'], user['name'],user['status'], user['email'],user['password'],user['country'], user['user_group'],user['user_role'],user['created_by'],user['creation_date'])
 
         return jsonify({"message": "Your account has been created","account":request_data}), 201
-
-    def fetch_all_users():
-        """
-            Function fetch all users
-            :return users list:
-        """
-        
-        users = con.get_all_users()
-        if users == []:
-            return jsonify({"message": "No users found"}), 404
-        return jsonify({'users': users}), 200
-        # user = User()
-        # userid = get_jwt_identity()
-        # if not userid:
-        #     return jsonify({'msg': 'Missing Authorization Header'}), 401
-        # get_user = user.get_user_by_id(userid)
-        # if not get_user:
-        #     return jsonify({"message": " No user with that id"}), 404
-        # if get_user['role'] == 'admin':
-        #     parcel = Parcel()
-        #     parcels = parcel.get_all_parcels()
-        #     if parcels == []:
-        #         return jsonify({"message": "No parcels found"}), 404
-        #     return jsonify({'parcels': parcels}), 200
-
-        # return jsonify({"message": "Only administrators can view parcels"}), 400
 
     def fetch_specific_user(userId):
         """
             Function fetch specific user
             :return user:
         """
-        # userId = get_jwt_identity()
-        # if not userId:
-        #     return({"message": "Missing authentication header"}), 401
-        
+        current_user_id = get_jwt_identity()
+        if not current_user_id:
+            return jsonify({'message': 'Missing token in the Authorization Header'}), 401
+          
         single_user = con.get_single_user(userId)
         if not single_user:
             return jsonify({"message": "user with that id doesnot exist"}), 404
+
         if single_user['status'] == 0:
-            return jsonify({"message":"The user with that account doesnt exist"}),404
-        return jsonify({'user': single_user}), 200
+            return jsonify({"message": "Account has been deactivated"}), 404
+
+        role = single_user['user_role']
+        if role == 'admin' or role == 'superadmin' or current_user_id == single_user['userId']:
+            if single_user == []:
+                return jsonify({"message": "No users found"}), 404
+            return jsonify({'user': single_user}), 200
+            
+        return jsonify ({"message":"You are not authorised to view user details"}),400
+    
+    
+    def fetch_all_users():
+        """
+            Function fetch all users
+            :return users list:
+        """
+        current_user_id = get_jwt_identity()
+        if not current_user_id:
+            return jsonify({'message': 'Missing token in the Authorization Header'}), 401
+        
+        User = con.get_single_user(current_user_id)
+        
+        role = User['user_role']
+        if role == 'admin' or role == 'superadmin':
+            users = con.get_all_users()
+            if users == []:
+                return jsonify({"message": "No users found"}), 404
+            return jsonify({'users': users}), 200
+
+        return jsonify({"message":"You are not authorised to view all users"}),401
+
+
+
 
 
     def cancel_specific_user(userId):
@@ -99,208 +125,174 @@ class User_Controller:
             Function cancel user
             :return success message:
         """
-        # userid = get_jwt_identity()
-        
-        user_to_edit = con.get_single_user(userId)
-        print(user_to_edit)
-        if not user_to_edit:
-            return jsonify({"message":"The user with that id doesnt exist"}),404
-        if user_to_edit['status'] == 0:
-            return jsonify({"message":"The user with that account doesnt exist"}),404
-        # if not Parcel_to_edit:
-        #     return jsonify({"message": " parcel doesnot exist"}), 404
-        # parcel_owner_id = Parcel_to_edit['userId']
-        # if parcel_owner_id != userid:
-        #     return jsonify({"message": "You can only cancel an \
-        #                     order you created"}), 400
-        
-        if not user_to_edit:
-            return jsonify({"message": "user with that id doesnt exist"}), 400
-        con.cancel_user(userId)
-        return jsonify({"message": "User has been cancelled"}), 200
 
-    def update_usergroup(userId):
-        """
-            Function to update user_group
-            :return success message:
-        """
-        request_data = request.get_json(force=True)
-        user_group = request_data['user_group']
-        
-        # if not get_jwt_identity():
-        #     return jsonify({"message": "Some fields are missing"}), 400
-        if len(request_data.keys()) != 1:
-            return jsonify({"message": "Some fields are missing"}), 400
-        validate_input = Validator().validate_string_input(user_group)
-        if not validate_input:
-            return jsonify({"message": "The user_group should be a none\
-                            empty string"}), 400
-        # userid = get_jwt_identity()
-        
-        # user = User()
-        # editor = user.get_user_by_id(userid)['role']
-        # if editor != 'admin':
-        #     return jsonify({"message": "You can only update the present location\
-        #                      if you are an admin"}), 400
-        user_to_edit=con.get_single_user(userId)
+        current_user_id = get_jwt_identity()
+        if not current_user_id:
+            return jsonify({'message': 'Missing token in the Authorization Header'}), 401
+
+        user_to_edit = con.get_single_user(userId)
+        role = user_to_edit['user_role']
+        if not user_to_edit:
+            return jsonify({"message": "The user with that id doesnt exist"}), 404
+            
         if user_to_edit['status'] == 0:
-            return jsonify({"message":"The user with that account doesnt exist"}),404
-        if not user_to_edit :
-            return jsonify({"message": "The user you are trying to edit doesnt\
-                    exist"}), 400
-        if user_to_edit['user_group'] == user_group:
-            return jsonify({"message": "user_group is already upto date"}), 400
-        
-        con.update_usergroup(userId, user_group)
-        edited_data = con.get_single_user(userId)
-        
-        return jsonify({"message": "Your user-group has been updated ", "Updated user informtion": edited_data}), 200
+            return jsonify({"message": "Account has been deactivated"}), 404
+            
+        if role == 'admin' or role == 'superadmin' or current_user_id == user_to_edit['userId']:
+            con.cancel_user(userId)
+            return jsonify({"message": "User has been cancelled"}), 200
+
+        return jsonify({"message":"You are not authorised to cancel users"}),400       
         
     def update_user_name(userId):
         """
             Function update name
             :return success message:
         """
-        # userid = get_jwt_identity()
-     
-        # user = User()
-        # if not userid:
-        #     return jsonify({"message": "Unauthorised access"}), 401
 
-        # editor = user.get_user_by_id(userid)['role']
+        current_user_id = get_jwt_identity()
+        if not current_user_id:
+            return jsonify({'message': 'Missing token in the Authorization Header'}), 401
+
         user = con.get_single_user(userId)
+        role = user['user_role']
+        id = user['userId']
+        
         if user['status'] == 0:
-            return jsonify({"message":"The user with that account doesnt exist"}),404
+            return jsonify({"message": "The user with that account doesnt exist"}), 404
+            
         if not user:
             return jsonify({"message": "The user you are editing doesnt\
                             exist"}), 404
-        # if not editor:
-        #     return jsonify({"message": "You are not a registered user of the \
-        #                     system"}), 401
-        # if editor != 'user' or parcel['userid'] != userid:
-        #     return jsonify({"message": "You can only update destination of the\
-        #                      parcel you have created "}), 400
-        request_data = request.get_json(force=True)
+
+        request_data=request.get_json(force=True)
+        
         if len(request_data.keys()) != 1:
             return jsonify({"message": "Some fields are missing"}), 400
+
         name = request_data['name']
+
         if (user['name'] == name):
-            return jsonify({"message":"The name is already upto date"}),400
-        validate_destination = Validator().validate_string_input(name)
-        if not validate_destination:
-            jsonify({"message": "name must be a non empty string"}), 400
-        
-        con.update_user_name(userId ,name)
-        edited_data = con.get_single_user(userId)
-        
-        return jsonify({"message": "Your name has been updated ",
+            return jsonify({"message": "The name is already upto date"}), 400
+            
+        validate_name = Validator().validate_string_input(name)
+
+        if role == 'admin' or role == 'superadmin' or current_user_id == id:
+            con.update_user_name(userId, name)
+            edited_data = con.get_single_user(userId)
+            return jsonify({"message": "Your name has been updated ",
                         "updated user credentials": edited_data}), 200
 
+        return jsonify({"message":"You cannot change a name of an association you have not created"}),400
+
+        
 
     def update_user_role(userId):
         """
             Function update user_role
             :param userId:
-            :param user_role:
+            
             :return success message:
         """
-        # userid = get_jwt_identity()
-        
-        # user = User()
-        # if not userid:
-        #     return jsonify({"message": "Unauthorised access"}), 401
+        current_user_id = get_jwt_identity()
+        if not current_user_id:
+            return jsonify({'message': 'Missing token in the Authorization Header'}), 401
 
-        # editor = user.get_user_by_id(userid)['role']
         user = con.get_single_user(userId)
+        role = user['user_role']
+        id = user['userId']
+        
         if user['status'] == 0:
-            return jsonify({"message":"The user with that account doesnt exist"}),404
+            return jsonify({"message": "The user with that account doesnt exist"}), 404
+            
         if not user:
             return jsonify({"message": "The user you are editing doesnt\
                             exist"}), 404
-        # if not editor:
-        #     return jsonify({"message": "You are not a registered user of the \
-        #                     system"}), 401
-        # if editor != 'user' or parcel['userid'] != userid:
-        #     return jsonify({"message": "You can only update destination of the\
-        #                      parcel you have created "}), 400
-        request_data = request.get_json(force=True)
+
+        request_data=request.get_json(force=True)
+        
         if len(request_data.keys()) != 1:
             return jsonify({"message": "Some fields are missing"}), 400
+
         user_role = request_data['user_role']
+
         if (user['user_role'] == user_role):
-            return jsonify({"message":"The user_role is already upto date"}),400
-        validate_destination = Validator().validate_string_input(user_role)
-        if not validate_destination:
-            jsonify({"message": "user_role must be a non empty string"}), 400
-        
-        con.update_userrole(userId ,user_role)
-        edited_data = con.get_single_user(userId)
-        
-        return jsonify({"message": "Your user_role has been updated ",
+            return jsonify({"message": "The user_role is already upto date"}), 400
+            
+        validate_user_role = Validator().validate_string_input(user_role)
+
+        if role == 'admin' or role == 'superadmin':
+            con.update_userrole(userId, user_role)
+            edited_data = con.get_single_user(userId)
+            return jsonify({"message": "Your user_role has been updated ",
                         "updated user credentials": edited_data}), 200
 
-                        
-    def update_country(userId):
-        """
-            Function update country
-            :param userId:
-            :param country:
-            :return success message:
-        """
-        # userid = get_jwt_identity()
-        
-        # user = User()
-        # if not userid:
-        #     return jsonify({"message": "Unauthorised access"}), 401
+        return jsonify({"message":"You cannot change a name of an association you have not created"}),400
 
-        # editor = user.get_user_by_id(userid)['role']
-        user = con.get_single_user(userId)
-        if user['status'] == 0:
-            return jsonify({"message":"The user with that account doesnt exist"}),404
-        if not user:
-            return jsonify({"message": "The user you are editing doesnt\
-                            exist"}), 404
-        # if not editor:
-        #     return jsonify({"message": "You are not a registered user of the \
-        #                     system"}), 401
-        # if editor != 'user' or parcel['userid'] != userid:
-        #     return jsonify({"message": "You can only update destination of the\
-        #                      parcel you have created "}), 400
-        request_data = request.get_json(force=True)
-        if len(request_data.keys()) != 1:
-            return jsonify({"message": "Some fields are missing"}), 400
-        country = request_data['country']
-        if (user['country'] == country):
-            return jsonify({"message":"The country is already upto date"}),400
-        validate_destination = Validator().validate_string_input(name)
-        if not validate_destination:
-            jsonify({"message": "country must be a non empty string"}), 400
-        
-        con.update_userrole(userId ,country)
-        edited_data = con.get_single_user(userId)
-        
-        return jsonify({"message": "Your country has been updated ",
-                        "updated user credentials": edited_data}), 200
     def delete_user(userId):
         """
             Function delete
             :return success message:
         """
-        # userid = get_jwt_identity()
-        # if not userid:
-        #     return jsonify({"message": "unauthorised access"}), 401
-        # user = User()
-        
-        user_to_delete = con.get_single_user(userId)
-        if user_to_delete['status'] == 0:
-            return jsonify({"message":"The user with that account doesnt exist"}),404
-        if not user_to_delete:
-            return jsonify({"message": "The user you are trying to edit doesnt exist"}), 400
+        current_user_id = get_jwt_identity()
+        if not current_user_id:
+            return jsonify({'message': 'Missing token in the Authorization Header'}), 401
 
-        con.delete_user(userId)
-        return jsonify({"message": "Your account has been deleted"}), 200
-        # editor = user.get_user_by_id(userid)['role']
-        # if editor == 'admin':
-        #     parcel.delete_parcel(parcelId)
-        #     return jsonify({"message": "Your parcel has been deleted"}), 200
-        # return jsonify({"message": "only administrators can delete parcels"}), 400
+        User = fetch_specific_user(current_user_id)
+        user_to_edit = con.get_single_user(userId)
+        role = user_to_edit['user_role']
+        if not user_to_edit:
+            return jsonify({"message": "The user with that id doesnt exist"}), 404
+            
+        if user_to_edit['status'] == 0:
+            return jsonify({"message": "Account has been deactivated"}), 404
+            
+        if role == 'admin' or role == 'superadmin' or current_user_id == user_to_edit['userId']:
+            con.delete_user(userId)
+            return jsonify({"message": "User has been deleted"}), 200
+
+        return jsonify({"message":"You are not authorised to delete users"}),400
+
+    def recover_password(email,newpassword):
+        """
+        Function to reset password
+        :param email:
+        :param newpassword:
+        :return success message:
+        """
+        password= generate_hash(newpassword)
+        
+        return con.reset_password(email, password)
+        
+    def fetch_pending_accounts():
+        """
+        Function to fetch_pending_accounts
+        :return all accounts whose status is pending:
+        """
+
+        current_user_id = get_jwt_identity()
+        if not current_user_id:
+            return jsonify({'message': 'Missing token in the Authorization Header'}), 401
+
+        User = fetch_specific_user(current_user_id)
+        user_to_edit = con.get_single_user(userId)
+        role = user_to_edit['user_role']
+        if not user_to_edit:
+            return jsonify({"message": "The user with that id doesnt exist"}), 404
+            
+        if user_to_edit['status'] == 0:
+            return jsonify({"message": "Account has been deactivated"}), 404
+            
+        if role == 'superadmin' :
+            return jsonify({"Pending accounts":con.get_pending_accounts()}),200
+
+
+    def logout(token):
+        """
+        Function to rlogout
+        :param token:
+        :return successful logout message:
+        """
+        return con.add_to_blacklist(token)
+
+    

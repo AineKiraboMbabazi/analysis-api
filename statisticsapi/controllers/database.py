@@ -64,6 +64,14 @@ class DatabaseConnection:
                 Location VARCHAR(100),
                 created_by VARCHAR(50),
                 FOREIGN KEY (userId) REFERENCES statistic_user(userId)ON UPDATE CASCADE
+                ); """)
+                
+        create_blacklist_table= (
+            """CREATE TABLE IF NOT EXISTS
+            blacklist(
+                
+                token VARCHAR(200),
+
                 );""")
 
         """
@@ -71,6 +79,7 @@ class DatabaseConnection:
         """
         self.cursor.execute(create_users_table)
         self.cursor.execute(create_associations_table)
+        self.cursor.execute(create_blacklist_table)
 
     def drop_table(self, table_name):
         """
@@ -125,6 +134,14 @@ class DatabaseConnection:
         cancel_query = "UPDATE statistic_association SET status=%s WHERE associationId=%s"
         self.cursor.execute(cancel_query, (0, associationId))
 
+    def approve_association(self, associationId):
+        """
+            Function to approve association
+            :param associationId:
+        """
+        approve_query = "UPDATE statistic_association SET status=%s WHERE associationId=%s"
+        self.cursor.execute(cancel_query, ('approved', associationId))
+
     def delete_association(self, associationId):
         """
             Function to delete association
@@ -161,19 +178,51 @@ class DatabaseConnection:
         parcels = self.dict_cursor.fetchall()
         return parcels
 
+    def fetch_associations_in_country(self, country):
+        """
+            Function to fetch all associations in country
+            :param userId:
+        """
+        fetch = "SELECT * FROM statistic_association WHERE country=%s"
+        self.dict_cursor.execute(fetch, (country,))
+        parcels = self.dict_cursor.fetchall()
+        return parcels
+
+    def fetch_associations_by_name(self, name):
+        """
+            Function to fetch associations by name
+            :param userId:
+        """
+        fetch = "SELECT * FROM statistic_association WHERE name=%s"
+        self.dict_cursor.execute(fetch, (name,))
+        parcels = self.dict_cursor.fetchone()
+        return parcels
+
+    def fetch_pending_association(self):
+        """
+            Function to fetch all pending associations 
+            :return all associations whose status is pending:
+        """
+        fetch = "SELECT * FROM statistic_association WHERE status=%s"
+        self.dict_cursor.execute(fetch, ('pending',))
+        parcels = self.dict_cursor.fetchall()
+        return parcels
+
     #################################################################################################
     #                                                                                               #
     #                              functions for the users model                                    #
     #                                                                                               #
     ################################################################################################
 
-    def add_user(self, associationId, name, status,country, user_group,user_role,created_by,creation_date):
+    def add_user(self, associationId, name, status,email,password,country, user_group,user_role,created_by,creation_date):
         """
             Function to add a user
 
             :param associationId:
             :param name:
             :param status:
+            :param email:
+            :param password:
             :param country :
             :param user_group :
             :param user_role :
@@ -181,8 +230,8 @@ class DatabaseConnection:
             :param creation_date:
             
         """
-        add_users = "INSERT INTO statistic_user ( associationId, name, status,country, user_group,user_role,created_by,creation_date ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)"
-        val =( associationId, name, status,country, user_group,user_role,created_by,creation_date)
+        add_users = "INSERT INTO statistic_user ( associationId, name, status,email,password,country, user_group,user_role,created_by,creation_date ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+        val =( associationId, name, status,email,password,country, user_group,user_role,created_by,creation_date)
         self.cursor.execute(add_users, val)
         
 
@@ -195,15 +244,35 @@ class DatabaseConnection:
         users = self.dict_cursor.fetchall()
         return users
 
+    def get_pending_accounts(self):
+        """
+            Function to fetch all pending accounts
+        """
+        get_all = "SELECT * FROM statistic_user WHERE status = %s"
+        self.dict_cursor.execute(get_all,('pending'))
+        users = self.dict_cursor.fetchall()
+        return users
+
 
     def get_single_user(self, userId):
         """
-            Function to fetch all single user
+            Function to fetch single user
             :param userId:
         """
         user_query = "SELECT * FROM statistic_user WHERE userId=%s"
         
         self.dict_cursor.execute(user_query, (userId,))
+        user = self.dict_cursor.fetchone()
+        return user
+
+    def get_user_by_email(self, email):
+        """
+            Function to fetch user by email
+            :param email:
+        """
+        user_query = "SELECT * FROM statistic_user WHERE email=%s"
+        
+        self.dict_cursor.execute(user_query, (email,))
         user = self.dict_cursor.fetchone()
         return user
 
@@ -214,6 +283,15 @@ class DatabaseConnection:
         """
         cancel_query = "UPDATE statistic_user SET status=%s WHERE userId=%s"
         self.cursor.execute(cancel_query, (0, userId))
+    
+    def reset_password(self, email, newpassword):
+        """
+            Function to cancel user
+            :param email:
+            :param newpassword:
+        """
+        reset_query = "UPDATE statistic_user SET password=%s WHERE email=%s"
+        self.cursor.execute(reset_query, (newpassword,email))
 
     def delete_user(self, userId):
         """
@@ -260,6 +338,22 @@ class DatabaseConnection:
         self.cursor.execute(update_query, (userId, name))
 
 
+    #################################################################################################
+    #                                                                                               #
+    #                              functions for the users logout                                   #
+    #                                                                                               #
+    ################################################################################################
+
+
+    def add_to_blacklist(self, token):
+        """
+            function to add tokens to blacklist on logout
+            :param token:
+            :return successful logout message:
+        """
+        add_to_blacklist = "INSERT INTO blacklist ( token ) VALUES (%s)"
+        val =( token)
+        self.cursor.execute(add_to_blacklist, val)
 
 
 if __name__ == '__main__':
