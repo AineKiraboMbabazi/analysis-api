@@ -178,13 +178,13 @@ class DatabaseConnection:
         parcels = self.dict_cursor.fetchall()
         return parcels
 
-    def fetch_associations_in_country(self, country):
+    def fetch_associations_in_country(self, Location):
         """
             Function to fetch all associations in country
-            :param userId:
+            :param country:
         """
-        fetch = "SELECT * FROM statistic_association WHERE country=%s"
-        self.dict_cursor.execute(fetch, (country,))
+        fetch = "SELECT * FROM statistic_association WHERE Location=%s"
+        self.dict_cursor.execute(fetch, (Location,))
         parcels = self.dict_cursor.fetchall()
         return parcels
 

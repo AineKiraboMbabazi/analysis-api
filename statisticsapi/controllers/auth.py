@@ -1,7 +1,8 @@
 import re
 import os
 from passlib.hash import pbkdf2_sha256 as sha256
-from flask_jwt_extended import (JWTManager, create_access_token)
+from flask_jwt_extended import (
+    JWTManager, create_access_token, jwt_required, get_jwt_identity)
 import datetime
 from flask import request, jsonify
 from statisticsapi.models.users import User
@@ -91,10 +92,5 @@ class Auth():
         return jsonify({"message": "You password has been reset"}), 200
         
     
-    def logout():
-        """
-            function for logout
-        """
-        token = get_jwt_identity()
-        User_Controller.logout(token)
-        return jsonify({"message":"successfully logged out"}),200
+
+        

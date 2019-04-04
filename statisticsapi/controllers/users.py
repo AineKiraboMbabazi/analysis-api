@@ -287,12 +287,21 @@ class User_Controller:
             return jsonify({"Pending accounts":con.get_pending_accounts()}),200
 
 
-    def logout(token):
-        """
+    def logout():
+        """User_Controller
         Function to rlogout
         :param token:
         :return successful logout message:
         """
-        return con.add_to_blacklist(token)
+        
+        token = get_jwt_identity()
+        
+        if not token:
+            return jsonify({"message": "missing authentication token"}), 401
+
+        con.add_to_blacklist(token)
+        return jsonify({"message": "successfully logged out"}), 200
+        
+        
 
     

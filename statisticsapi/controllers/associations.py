@@ -80,7 +80,9 @@ class Association_Controller:
                 return jsonify({"message": "No associations found"}), 404
             return jsonify({'associations': associations}), 200  
         if user_group == 'government':
+            print(country)
             associations = con.fetch_associations_in_country(country)
+            print(associations)
             if associations == []:
                 return jsonify({"message": "No associations found"}), 404
             return jsonify({'associations': associations}), 200  

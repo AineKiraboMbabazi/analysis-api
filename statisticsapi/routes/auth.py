@@ -37,6 +37,8 @@ def recover_password():
 """
     Endpoint for logging out a user
 """
-@app.route('/api/v1/auth/logout', methods=['POST'])
+@app.route('/api/v1/auth/logout', methods=['GET'])
+@jwt_required
 def logout():
-    Auth.logout()
+    token = get_jwt_identity()
+    return User_Controller.logout()
