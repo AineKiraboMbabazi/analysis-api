@@ -21,9 +21,6 @@ class Government_Controller:
 
         current_user = get_jwt_identity()
 
-        if not current_user:
-            return jsonify({'message': 'Missing token in the Authorization Header'}), 401
-
         request_data = request.get_json(force=True)
 
         if len(request_data.keys()) != 2:
@@ -34,7 +31,7 @@ class Government_Controller:
         
         userId = current_user
         
-        if user['status'] == 0:
+        if user['status'] == 0 or user['status'] == '0':
             return jsonify({"message": "User account has been deactivated"}), 400
             
         role = user['user_role']
@@ -48,10 +45,7 @@ class Government_Controller:
         name = request_data['name']
         Location = request_data['Location']
         created_by = user['name']
-        # print(creation_date)
-        # print(Location)
-        # print(created_by)
-        # print(name)
+
         validate_input = Validator()
 
         if not (validate_input.validate_string_input(name)):
@@ -78,9 +72,6 @@ class Government_Controller:
         """
 
         current_user_id = get_jwt_identity()
-
-        if not current_user_id:
-            return jsonify({'message': 'Missing token in the Authorization Header'}), 401
 
         User = con.get_single_user(current_user_id)
         
@@ -110,7 +101,7 @@ class Government_Controller:
         user = con.get_single_user(current_user_id)
         user_role = user['user_role']
 
-        if user['status'] == 0:
+        if user['status'] == 0 or user['status'] == '0':
             return jsonify({"message": "Trying to edit government using a deactivated account"}), 400
             
         if user_role == 'superadmin':
@@ -145,9 +136,6 @@ class Government_Controller:
 
         current_user_id = get_jwt_identity()
 
-        if not current_user_id:
-            return jsonify({'message': 'Missing token in the Authorization Header'}), 401
-
         government_to_edit = con.get_single_government(governmentId)
         
 
@@ -160,7 +148,7 @@ class Government_Controller:
         User = con.get_single_user(current_user_id)
         role = User['user_role']
        
-        if User['status'] == 0:
+        if User['status'] == 0 or User['status'] == '0':
             return jsonify({"message": "Trying to edit government using a deactivated account"}), 400
             
         if role == 'superadmin':
@@ -227,8 +215,9 @@ class Government_Controller:
 
         User = con.get_single_user(current_user_id)
         role = User['user_role']
-        if User['status'] == 0:
-            return jsonify({"message":"user account inactive"}), 400
+        if User['status'] == 0 or User['status'] == '0':
+            return jsonify({"message": "user account inactive"}), 400
+            
         government = con.get_single_government(governmentId)
         
         if not government or government['status'] == 0:
@@ -266,9 +255,6 @@ class Government_Controller:
 
         current_user_id = get_jwt_identity()
 
-        if not current_user_id:
-            return jsonify({'message': 'Missing token in the Authorization Header'}), 401
-
         government_to_edit = con.get_single_government(governmentId)
         if government_to_edit == None:
             return jsonify({"message": "The government doesnt exist"}), 400
@@ -279,7 +265,7 @@ class Government_Controller:
             return jsonify({"message": "Cant update an inactive government "}), 400
  
         User = con.get_single_user(current_user_id)
-        if User['status'] == 0 :
+        if User['status'] == 0 or User['status'] == '0':
             return jsonify({"message": "user with id not found"}), 404
             
         role = User['user_role']
@@ -300,9 +286,6 @@ class Government_Controller:
         """
 
         current_user_id = get_jwt_identity()
-
-        if not current_user_id:
-            return jsonify({'message': 'Missing token in the Authorization Header'}), 401
 
         government_to_approve = con.get_single_government(governmentId)
 
