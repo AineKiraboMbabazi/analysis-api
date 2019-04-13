@@ -37,7 +37,7 @@ class Association_Controller:
         userId = current_user
         status  = user['status']
         
-        if  status == 0:
+        if  status == 0 or status == '0':
             return jsonify({"message": "The user account has been deactivated"}), 400
             
         role = user['user_role']
@@ -113,7 +113,7 @@ class Association_Controller:
         
         user = con.get_single_user(current_user_id)
         
-        if user['status'] == 0:
+        if user['status'] == 0 or user['status'] == '0':
             return jsonify({"message":"Trying to edit association using a deactivated account"}),400
         
         user_role = user['user_role']
@@ -160,7 +160,7 @@ class Association_Controller:
  
         User = con.get_single_user(current_user_id)
         role = User['user_role']
-        if User['status'] == 0:
+        if User['status'] == 0 or User['status'] == '0':
             return jsonify({"message":"Trying to edit association using a deactivated account"}),400
 
         if role == 'superadmin':
@@ -229,7 +229,7 @@ class Association_Controller:
         if User == []:
             return jsonify({"message": "User not found"}), 404
             
-        if User['status'] == 0:
+        if User['status'] == 0 or User['status'] == '0':
             return jsonify({"message": "user account inactive"}), 400
             
         role = User['user_role']
@@ -281,7 +281,7 @@ class Association_Controller:
             return jsonify({"message": "Cant update an inactive association "}), 400
  
         User = con.get_single_user(current_user_id)
-        if User['status'] == 0 or User == None or not User:
+        if User['status'] == 0 or User == None or User['status'] == '0':
             return jsonify({"message":"user with id not found"}),404
         role = User['user_role']
 

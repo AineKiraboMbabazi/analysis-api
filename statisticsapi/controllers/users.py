@@ -113,7 +113,7 @@ class User_Controller:
         if not single_user:
             return jsonify({"message": "user with that id doesnot exist"}), 404
 
-        if single_user['status'] == 0:
+        if single_user['status'] == 0 or single_user['status'] == '0':
             return jsonify({"message": "Account has been deactivated"}), 404
 
         role = single_user['user_role']
@@ -160,7 +160,7 @@ class User_Controller:
             return jsonify({"message": "The user with that id doesnt exist"}), 404
         role = user_to_edit['user_role']
 
-        if user_to_edit['status'] == 0:
+        if user_to_edit['status'] == 0 or user_to_edit['status'] == '0':
             return jsonify({"message": "Account has been deactivated"}), 404
             
         if role == 'admin' or role == 'superadmin' or current_user_id == user_to_edit['userId']:
@@ -184,7 +184,7 @@ class User_Controller:
         
         id = user['userId']
         
-        if user['status'] == 0:
+        if user['status'] == 0 or user['status'] == '0':
             return jsonify({"message": "The user with that account doesnt exist"}), 404
             
 
@@ -228,7 +228,7 @@ class User_Controller:
 
         id = user['userId']
         
-        if user['status'] == 0:
+        if user['status'] == 0 or user['status'] == '0':
             return jsonify({"message": "The user with that account doesnt exist"}), 404
 
         request_data=request.get_json(force=True)
@@ -273,7 +273,7 @@ class User_Controller:
         if not user_to_edit or user_to_edit == None:
             return jsonify({"message": "The user with that id doesnt exist"}), 404
             
-        if user_to_edit['status'] == 0:
+        if user_to_edit['status'] == 0 or user_to_edit['status'] == '0':
             return jsonify({"message": "Account has been deactivated"}), 404
 
         role = user_to_edit['user_role'] 
@@ -313,7 +313,7 @@ class User_Controller:
         if not user or user == []:
             return jsonify({"message": "User with that email doesnot exist"}), 404
         
-        if user['status'] == 0:
+        if user['status'] == 0 or user['status'] == '0':
             return jsonify({"message":"Account has been deactivated"}),400
             
         newpassword = generate_hash(newpassword)
@@ -335,7 +335,7 @@ class User_Controller:
         if not user_to_edit:
             return jsonify({"message": "The user with that id doesnt exist"}), 404
             
-        if user_to_edit['status'] == 0:
+        if user_to_edit['status'] == 0 or user_to_edit['status'] == '0':
             return jsonify({"message": "Account has been deactivated"}), 404
             
         if role == 'superadmin' :

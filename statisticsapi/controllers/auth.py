@@ -96,7 +96,7 @@ class Auth():
         if not user or user == []:
             return jsonify({"message": "User with that email doesnot exist"}), 404
         # print(user['status'])
-        if user['status'] == 0:
+        if user['status'] == 0 or user['status'] == '0':
             return jsonify({"message":"Account has been deactivated"}),400
             
         newpassword = generate_hash(newpassword)
