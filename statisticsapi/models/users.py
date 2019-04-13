@@ -1,8 +1,9 @@
 class User():
     """User class defining the users model"""
     
-    def __init__(self, associationId, name, status,email, password,country, user_group,user_role,created_by,creation_date):    
+    def __init__(self, associationId, governmentId, name, status,email, password,country, user_group,user_role,created_by,creation_date):    
         self.associationId = associationId
+        self.governmentId = governmentId
         self.name = name
         self.status = status
         self.email = email

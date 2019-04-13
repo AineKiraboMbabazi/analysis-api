@@ -68,7 +68,7 @@ def update_userrole(userId):
         :return success message:
     """
 
-    return User_Controller.update_user_name(userId)
+    return User_Controller.update_user_role(userId)
     
 
 @app.route("/api/v1/users/delete/<int:userId>", methods=['PUT'])

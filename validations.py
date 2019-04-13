@@ -20,3 +20,22 @@ class Validator:
                 if not letters.match(text) or not text or text.isspace():
                         return False
                 return True
+
+        def validate_user_group(self, text):
+                text = text.lower()
+
+                groups = ['government', 'association']
+                
+                if text not in groups:
+                        return False
+
+                return True
+
+        def validate_user_role(self, text):
+                text = text.lower()
+                groups = ['admin', 'superadmin','user']
+                
+                if text not in groups:
+                        return False
+                        
+                return True

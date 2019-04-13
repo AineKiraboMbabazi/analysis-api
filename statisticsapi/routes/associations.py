@@ -45,9 +45,7 @@ def create_association():
 @jwt_required
 def fetch_all_associations():
     """
-        Function fetch all associations'}), 401
-    return Association_Controller.approve_association(associationId)
-
+        Function fetch all associations
         :return associations list:
     """
 
@@ -74,7 +72,7 @@ def pending():
     
     return Association_Controller.fetch_pending_association()
 
-@app.route("/api/v1/associations/approve/<int:associationId>", methods=['POST'])
+@app.route("/api/v1/associations/approve/<int:associationId>", methods=['PUT'])
 @jwt_required
 def approve_association(associationId):
     """
@@ -96,14 +94,14 @@ def cancel_specific_association(associationId):
     
     return Association_Controller.cancel_specific_association(associationId)
 
-@app.route("/api/v1/associations/update_location/<int:associationId>", methods=['PUT'])
-@jwt_required
-def update_location(associationId):
-    """
-        Function to update location
-        :return success message:
-    """
-    return Association_Controller.update_location(associationId)
+# @app.route("/api/v1/associations/update_location/<int:associationId>", methods=['PUT'])
+# @jwt_required
+# def update_location(associationId):
+#     """
+#         Function to update location
+#         :return success message:
+#     """
+#     return Association_Controller.update_location(associationId)
 
 
 @app.route("/api/v1/associations/name/<int:associationId>", methods=['PUT'])
