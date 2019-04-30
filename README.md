@@ -1,5 +1,6 @@
 
 [![Build Status](https://travis-ci.org/AineKiraboMbabazi/analysis-api.svg?branch=users)](https://travis-ci.org/AineKiraboMbabazi/analysis-api)
+[![Coverage Status](https://coveralls.io/repos/github/AineKiraboMbabazi/analysis-api/badge.svg?branch=master)](https://coveralls.io/github/AineKiraboMbabazi/analysis-api?branch=master)
 [![Coverage Status](https://coveralls.io/repos/github/AineKiraboMbabazi/analysis-api/badge.svg?branch=users)](https://coveralls.io/github/AineKiraboMbabazi/analysis-api?branch=users)
 
 ## Analysis-api
