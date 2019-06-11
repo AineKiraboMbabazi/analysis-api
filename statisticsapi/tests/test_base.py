@@ -14,28 +14,18 @@ class TestBase(unittest.TestCase):
     are used in the various tests.
     """
     user = {
-    "associationId": '1',
-    "governmentId":'none',
-    "country":"Uganda",
-    "name" : "eve1",
-    "email" : "eve@gmail.com",
-    "user_group": "association",
-    "user_role":"user",
-	"password": "mine1234",
-    "confirm_password":"mine1234"
-    }
-
-    government_user = {
-    "associationId": '1',
-    "governmentId":'1',
-    "country":"Uganda",
-    "name" : "eve1",
-    "email" : "eve@gmail.com",
-    "user_group": "government",
-    "user_role":"user",
-	"password": "mine1234",
-    "confirm_password":"mine1234"
-    }
+	"first_name":"aine",
+	"last_name":"kirabo",
+	"other_name":"mbabazi",
+	"photo":"some photo",
+	"associationId":1,
+	"governmentId":1,
+	"user_role":"superadmin",
+	"email":"admin1@admin.com",
+	"password":"password",
+	"country":"Uganda"
+}
+    
     user1 = {
     "associationId": '1',
     "governmentId":'none',
@@ -88,8 +78,8 @@ class TestBase(unittest.TestCase):
     "confirm_password":"mine1234"
     }
     user_login_data = {
-        "email" : "eve@gmail.com",
-        "password": "mine1234"
+        "email" : "admin1@admin.com",
+        "password": "password"
     }
     recover = {
         "email" : "eve@gmail.com",
@@ -290,14 +280,14 @@ class TestBase(unittest.TestCase):
     }
 
     association_data= {
-        "name": "Agribus",
-        "Location": "Uganda"
+        "governmentId": 1,
+        "name": "myfarm2",
+        "photo": "photo2"
     }
 
-
     government_data= {
-        "name": "Ugandan",
-        "Location": "Uganda"
+        "name": "myfarm2",
+        "photo": "photo2"
     }
     update_name_data = {
         "name":"Agrofrost"
@@ -386,6 +376,8 @@ class TestBase(unittest.TestCase):
         return self.user_access_token
 
     def sign_up(self):
+        self.app_client.post("/api/v1/auth/signup", content_type='application/json', 
+            data=json.dumps(self.user))
         create_user = self.app_client.post("/api/v1/auth/signup", content_type='application/json', 
             data=json.dumps(self.user))
         
