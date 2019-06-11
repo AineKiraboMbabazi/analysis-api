@@ -41,7 +41,7 @@ class Auth():
         
         login_validation = Validator()
         if not login_validation.validate_email(email):
-            return jsonify({"message": "You entered an invalid email or theemail is missing"}), 401
+            return jsonify({"message": "You entered an invalid email or the email is missing"}), 401
 
         if not login_validation.validate_password(password):
             return jsonify({"message": "You entered an invalid password,password should be atleast 8 characters long"}), 401
@@ -54,6 +54,7 @@ class Auth():
             return jsonify ({"message":"user is not availabe"}),404
         
         verified_hash=verify_hash(password, check_user['password'])
+        print(verified_hash)
         if not verified_hash:
             return jsonify({"message":"The password you have entered is incorrect"}),401
         
