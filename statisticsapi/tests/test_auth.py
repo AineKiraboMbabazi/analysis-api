@@ -25,71 +25,71 @@ class TestAuth(TestBase):
         self.sign_up()
         user_login = self.app_client.post("api/v1/auth/login", content_type="application/json", 
             data=json.dumps(self.user_login_data))
-        print(json.loads(user_login.data))
+        
         self.assertEqual(user_login.status_code, 200)
         response = json.loads(user_login.data)
         self.assertEqual(response['message'], 'login successful')
         
-    # def test_cant_login_user_with_missing_fields(self):
-    #     """
-    #         function to test user creation
-    #     """
+    def test_cant_login_user_with_missing_fields(self):
+        """
+            function to test user creation
+        """
         
-    #     self.sign_up()
-    #     user_login = self.app_client.post("api/v1/auth/login", content_type="application/json", 
-    #         data=json.dumps(self.user_login_datam))
-    #     self.assertEqual(user_login.status_code, 401)
-    #     response = json.loads(user_login.data)
-    #     self.assertEqual(response['message'], 'some fields are missing')
+        self.sign_up()
+        user_login = self.app_client.post("api/v1/auth/login", content_type="application/json", 
+            data=json.dumps(self.user_login_datam))
+        self.assertEqual(user_login.status_code, 401)
+        response = json.loads(user_login.data)
+        self.assertEqual(response['message'], 'some fields are missing')
 
-    # def test_cant_login_user_with_invalid_email(self):
-    #     """
-    #         function to test user creation
-    #     """
+    def test_cant_login_user_with_invalid_email(self):
+        """
+            function to test user creation
+        """
         
-    #     self.sign_up()
-    #     user_login = self.app_client.post("api/v1/auth/login", content_type="application/json", 
-    #         data=json.dumps(self.user_login_datae))
-    #     self.assertEqual(user_login.status_code, 401)
-    #     response = json.loads(user_login.data)
-    #     self.assertEqual(response['message'], 'You entered an invalid email or theemail is missing')
+        self.sign_up()
+        user_login = self.app_client.post("api/v1/auth/login", content_type="application/json", 
+            data=json.dumps(self.user_login_datae))
+        self.assertEqual(user_login.status_code, 401)
+        response = json.loads(user_login.data)
+        self.assertEqual(response['message'], 'You entered an invalid email or the email is missing')
         
 
-    # def test_cant_login_user_with_invalid_password(self):
-    #     """
-    #         function to test user creation
-    #     """
+    def test_cant_login_user_with_invalid_password(self):
+        """
+            function to test user creation
+        """
         
-    #     self.sign_up()
-    #     user_login = self.app_client.post("api/v1/auth/login", content_type="application/json", 
-    #         data=json.dumps(self.user_login_datap))
-    #     self.assertEqual(user_login.status_code, 401)
-    #     response = json.loads(user_login.data)
-    #     self.assertEqual(response['message'], 'You entered an invalid password,password should be atleast 8 characters long')
+        self.sign_up()
+        user_login = self.app_client.post("api/v1/auth/login", content_type="application/json", 
+            data=json.dumps(self.user_login_datap))
+        self.assertEqual(user_login.status_code, 401)
+        response = json.loads(user_login.data)
+        self.assertEqual(response['message'], 'You entered an invalid password,password should be atleast 8 characters long')
 
-    # def test_cant_login_non_existent_user(self):
-    #     """
-    #         function to test user creation
-    #     """
+    def test_cant_login_non_existent_user(self):
+        """
+            function to test user creation
+        """
         
-    #     self.sign_up()
-    #     user_login = self.app_client.post("api/v1/auth/login", content_type="application/json", 
-    #         data=json.dumps(self.user_login_data44))
-    #     self.assertEqual(user_login.status_code, 404)
-    #     response = json.loads(user_login.data)
-    #     self.assertEqual(response['message'], 'user is not availabe')
+        self.sign_up()
+        user_login = self.app_client.post("api/v1/auth/login", content_type="application/json", 
+            data=json.dumps(self.user_login_data44))
+        self.assertEqual(user_login.status_code, 404)
+        response = json.loads(user_login.data)
+        self.assertEqual(response['message'], 'user is not availabe')
         
-    # def test_cant_login_user_with_incorrect_password(self):
-    #     """
-    #         function to test user creation
-    #     """
+    def test_cant_login_user_with_incorrect_password(self):
+        """
+            function to test user creation
+        """
         
-    #     self.sign_up()
-    #     user_login = self.app_client.post("api/v1/auth/login", content_type="application/json", 
-    #         data=json.dumps(self.user_login_datai))
-    #     self.assertEqual(user_login.status_code, 401)
-    #     response = json.loads(user_login.data)
-    #     self.assertEqual(response['message'], 'The password you have entered is incorrect')
+        self.sign_up()
+        user_login = self.app_client.post("api/v1/auth/login", content_type="application/json", 
+            data=json.dumps(self.user_login_datai))
+        self.assertEqual(user_login.status_code, 401)
+        response = json.loads(user_login.data)
+        self.assertEqual(response['message'], 'The password you have entered is incorrect')
 
     # #############################################################################################
     # #                                                                                           #

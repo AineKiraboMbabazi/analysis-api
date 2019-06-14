@@ -31,21 +31,21 @@ class Government_Controller:
         
         if user['status'] == 0 or user['status'] == '0':
             return jsonify({"message": "User account has been deactivated"}), 400
-            
+       
         role = user['user_role']
-        creation_date, updated_at = datetime.date.today().strftime('%Y-%m-%d')
+        creation_date = datetime.date.today().strftime('%Y-%m-%d')
+        updated_at = datetime.date.today().strftime('%Y-%m-%d')
         name = request_data['name']
         status = 'active'
         photo = request_data['photo']
-        created_by,updated_by = current_user
-        
+        created_by= current_user
+        updated_by = current_user
         validate_input = Validator()
 
         if not (validate_input.validate_string_input(name)):
             return jsonify({"message": "Name field should contain strings "}), 400
 
-        if not (validate_input.validate_string_input(Location)):
-            return jsonify({"message": "Location field should contain strings "}), 400 
+        
                             
         government=con.fetch_governments_by_name(name)
         

@@ -24,7 +24,7 @@ class TestBase(unittest.TestCase):
 	"email":"admin1@admin.com",
 	"password":"password",
 	"country":"Uganda"
-}
+    }
     
     user1 = {
     "associationId": '1',
@@ -86,8 +86,8 @@ class TestBase(unittest.TestCase):
         "newpassword": "mine1234"
     }
     user_login_datai = {
-        "email" : "eve@gmail.com",
-        "password": "mine12344"
+        "email" : "admin3@admin.com",
+        "password": "passwords"
     }
     user_login_datae= {
         "email" : "evegmail.com",
@@ -119,8 +119,8 @@ class TestBase(unittest.TestCase):
         "confirm_password":"mine1234"
     }
     super_admin_user_data = {
-        "email": "super@super.com",
-        "password": "mine1234"
+        "email": "admin3@admin.com",
+        "password": "password"
     }
     
     super_admin_user = {
@@ -376,9 +376,12 @@ class TestBase(unittest.TestCase):
         return self.user_access_token
 
     def sign_up(self):
-        self.app_client.post("/api/v1/auth/signup", content_type='application/json', 
-            data=json.dumps(self.user))
-        create_user = self.app_client.post("/api/v1/auth/signup", content_type='application/json', 
+        token = self.superadmin_login()
+        self.app_client.post("/api/v1/governments", content_type='application/json', 
+            data=json.dumps(self.government_data), headers={'Authorization': f'Bearer {token}'})
+        self.app_client.post("/api/v1/associations", content_type='application/json', 
+            data=json.dumps(self.association_data), headers={'Authorization': f'Bearer {token}'})
+        create_user =self.app_client.post("/api/v1/auth/signup", content_type='application/json', 
             data=json.dumps(self.user))
         
         self.assertEqual(create_user.status_code, 201)

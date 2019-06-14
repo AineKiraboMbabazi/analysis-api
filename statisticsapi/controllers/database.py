@@ -51,11 +51,19 @@ class DatabaseConnection:
                 
         # ,CONSTRAINT assoc_id FOREIGN KEY fk_association_id(associationId) REFERENCES statistic_association (associationId) ON UPDATE CASCADE
             
+        add_users = "INSERT INTO statistic_user ( first_name ,last_name ,other_name ,photo ,associationId ,governmentId ,status ,user_role ,email ,password ,country ,created_by,creation_date ,updated_by,updated_at) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+        val =( "Aine" ,"Kirabo" ,"Mbabazi" ,"photo" ,"1" ,"1" ,1 ,"superadmin" ,"admin3@admin.com" ,"$pbkdf2-sha256$29000$qRUCQEjpHSPkfE8p5RwjRA$oA0e.2qrdn1J7HM9qSW7.tyvAVWQlqKdJlsut7vsQ8w" ,"Uganda" ,1,"2019-08-09" ,1,"2019-08-09")
+        self.cursor.execute(add_users, val)
+        get_user_id = "SELECT userId FROM statistic_user WHERE email='admin3@admin.com'"
         
+        created_by = self.cursor.fetchone()
+        update = "UPDATE statistic_user SET created_by= %s,updated_by = %s WHERE email ='admin3@admin.com'"
+        val = (created_by,created_by)
+        self.cursor.execute(update, val)
 
         create_associations_table = 'CREATE TABLE IF NOT EXISTS statistic_association(associationId INT NOT NULL AUTO_INCREMENT PRIMARY KEY,name VARCHAR(50),photo VARCHAR(150),status VARCHAR(20),governmentId INT,created_by INT,creation_date TIMESTAMP,updated_by INT,updated_at DATETIME)'
 
-        create_government_table = 'CREATE TABLE IF NOT EXISTS statistic_government(governmentId INT NOT NULL AUTO_INCREMENT PRIMARY KEY,name VARCHAR(50),photo VARCHAR(150),status VARCHAR(20),associationId INT,created_by INT,creation_date TIMESTAMP,updated_by INT,updated_at DATETIME)'
+        create_government_table = 'CREATE TABLE IF NOT EXISTS statistic_government(governmentId INT NOT NULL AUTO_INCREMENT PRIMARY KEY,name VARCHAR(50),photo VARCHAR(150),status VARCHAR(20),created_by INT,creation_date TIMESTAMP,updated_by INT,updated_at DATETIME)'
                 
         # ,CONSTRAINT user_id FOREIGN KEY fk_user_id(userId) REFERENCES statistic_user(userId) ON UPDATE CASCADE
                 
@@ -263,7 +271,7 @@ class DatabaseConnection:
             :param created_by:
             :return created government: 
         """
-        add_government = "INSERT INTO statistic_government (name, photo, status, created_by, creation_date, updated_by, updated_at ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)"
+        add_government = "INSERT INTO statistic_government (name, photo, status, created_by, creation_date, updated_by, updated_at ) VALUES (%s,%s,%s,%s,%s,%s,%s)"
         val =(name, photo, status,  created_by, creation_date, updated_by, updated_at)
         self.cursor.execute(add_government, val)
         

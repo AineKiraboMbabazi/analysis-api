@@ -54,7 +54,7 @@ class Auth():
             return jsonify ({"message":"user is not availabe"}),404
         
         verified_hash=verify_hash(password, check_user['password'])
-        print(verified_hash)
+        
         if not verified_hash:
             return jsonify({"message":"The password you have entered is incorrect"}),401
         
