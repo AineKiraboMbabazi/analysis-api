@@ -92,7 +92,39 @@ class Association_Controller:
             if len (associations) == 0 or associations == None or associations == []:
                 return jsonify({"message": "No associations found"}), 404
         
-            return jsonify({'associations' :associations}), 200
+            return jsonify({
+            columns: [
+            {
+              label: 'associationId',
+              field: 'associationId',
+              sort: 'asc'
+            },
+            {
+              label: 'governmentId',
+              field: 'associationId',
+              sort: 'asc'
+            },{
+              label: 'name',
+              field: 'name',
+              sort: 'asc'
+            },{
+              label: 'photo',
+              field: 'photo',
+              sort: 'asc'
+            },{
+              label: 'created_by',
+              field: 'created_by',
+              sort: 'asc'
+            },
+            {
+              label: 'updated-by',
+              field: 'updated_by',
+              sort: 'asc'
+            },{
+              label: 'updated-at',
+              field: 'updated_at',
+              sort: 'asc'
+            },'associations' :associations}), 200
        
         # if user_group == 'government':
         #     if len (associations) == 0 or associations == None or associations == []:
