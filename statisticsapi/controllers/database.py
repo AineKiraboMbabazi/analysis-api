@@ -450,6 +450,8 @@ class DatabaseConnection:
         users = self.dict_cursor.fetchall()
         return users
 
+    
+
     def get_pending_accounts(self):
         """
             Function to fetch all pending accounts
