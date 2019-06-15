@@ -76,7 +76,35 @@ class Government_Controller:
             if governments == [] or len(governments) ==0:
                 return jsonify({"message": "No governments found"}), 404
 
-            return jsonify({'governments': governments}), 200
+            return jsonify({
+            columns: [
+            {
+              label: 'governmentId',
+              field: 'associationId',
+              sort: 'asc'
+            },{
+              label: 'name',
+              field: 'name',
+              sort: 'asc'
+            },{
+              label: 'photo',
+              field: 'photo',
+              sort: 'asc'
+            },{
+              label: 'created_by',
+              field: 'created_by',
+              sort: 'asc'
+            },
+            {
+              label: 'updated-by',
+              field: 'updated_by',
+              sort: 'asc'
+            },{
+              label: 'updated-at',
+              field: 'updated_at',
+              sort: 'asc'
+            },
+            'governments': governments}), 200
             
         
         return jsonify({"message":"Unauthorised access"}),401
