@@ -103,8 +103,11 @@ class Government_Controller:
               label: 'updated-at',
               field: 'updated_at',
               sort: 'asc'
-            },
-            'governments': governments}), 200
+            }],
+            
+                'governments': governments
+            
+            }), 200
             
         
         return jsonify({"message":"Unauthorised access"}),401

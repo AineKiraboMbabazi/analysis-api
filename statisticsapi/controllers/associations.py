@@ -120,11 +120,17 @@ class Association_Controller:
               label: 'updated-by',
               field: 'updated_by',
               sort: 'asc'
-            },{
+            },
+            {
               label: 'updated-at',
               field: 'updated_at',
               sort: 'asc'
-            },'associations' :associations}), 200
+            }],
+            
+                'associations' :associations
+                
+            
+            }), 200
        
         # if user_group == 'government':
         #     if len (associations) == 0 or associations == None or associations == []:
