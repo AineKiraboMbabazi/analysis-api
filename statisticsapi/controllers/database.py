@@ -31,7 +31,7 @@ class DatabaseConnection:
             self.con_parameter = dict(
                 database=db,
                 user="root",
-                password="",
+                password="Root1#@",
                 host="localhost"
             )
             self.con = pymysql.connect(**self.con_parameter)
