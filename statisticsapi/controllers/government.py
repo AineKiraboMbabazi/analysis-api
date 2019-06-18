@@ -6,12 +6,31 @@ from flask import request, jsonify
 from validations import Validator
 from ..models.government import Government
 from .database import DatabaseConnection
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 con = DatabaseConnection()
 
 
 class Government_Controller:
 
-    
+    def sendmail(toaddr,signup_url):
+        fromaddr = "weatherstationsecure@gmail.com"
+        msg = MIMEMultipart()
+        msg['From'] = fromaddr
+        msg['To'] = toaddr
+        msg['Subject'] = "Administrator account creation"
+        body = "Follow the link below to complete account creation \n"+signup_url
+        msg.attach(MIMEText(body, 'plain'))
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.ehlo()
+        server.starttls()
+        server.login(fromaddr, "W1meaict.")
+        text = msg.as_string()
+        server.sendmail(fromaddr, toaddr, text)
+        server.quit()
+        return jsonify({"message":"email notification has been sent"}),200
+
     def create_government():
         """
             controller to create a government
@@ -77,35 +96,35 @@ class Government_Controller:
                 return jsonify({"message": "No governments found"}), 404
 
             return jsonify({
-            columns: [
+            'columns': [
             {
-              label: 'governmentId',
-              field: 'associationId',
-              sort: 'asc'
+              'label': 'governmentId',
+              'field': 'associationId',
+              'sort': 'asc'
             },{
-              label: 'name',
-              field: 'name',
-              sort: 'asc'
+              'label': 'name',
+              'field': 'name',
+              'sort': 'asc'
             },{
-              label: 'photo',
-              field: 'photo',
-              sort: 'asc'
+              'label': 'photo',
+              'field': 'photo',
+              'sort': 'asc'
             },{
-              label: 'created_by',
-              field: 'created_by',
-              sort: 'asc'
+              'label': 'created_by',
+              'field': 'created_by',
+              'sort': 'asc'
             },
             {
-              label: 'updated-by',
-              field: 'updated_by',
-              sort: 'asc'
+              'label': 'updated-by',
+              'field': 'updated_by',
+              'sort': 'asc'
             },{
-              label: 'updated-at',
-              field: 'updated_at',
-              sort: 'asc'
+              'label': 'updated-at',
+              'field': 'updated_at',
+              'sort': 'asc'
             }],
             
-                'governments': governments
+                'rows': governments
             
             }), 200
             

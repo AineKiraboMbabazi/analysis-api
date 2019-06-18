@@ -25,17 +25,22 @@ class TestBase(unittest.TestCase):
 	"password":"password",
 	"country":"Uganda"
     }
+    user1_login={
+        "email":"admin5@admin.com",
+	    "password":"password"
+    }
     
     user1 = {
-    "associationId": '1',
-    "governmentId":'none',
-    "country":"Uganda",
-    "name" : "eve1",
-    "email" : "new@gmail.com",
-    "user_group": "association",
-    "user_role":"user",
-	"password": "mine1234",
-    "confirm_password":"mine1234"
+    "first_name":"aine",
+	"last_name":"kirabo",
+	"other_name":"mbabazi",
+	"photo":"some photo",
+	"associationId":1,
+	"governmentId":1,
+	"user_role":"user",
+	"email":"admin5@admin.com",
+	"password":"password",
+	"country":"Uganda"
     }
 
     user_login_data2 = {
@@ -43,7 +48,7 @@ class TestBase(unittest.TestCase):
         "password": "mine1234"
     }
     user_login_data3 = {
-        "email" : "new@gmail.com",
+        "email" : "admin1@admin.com",
         "newpassword": "mine12343"
     }
     user_login_data4 = {
@@ -82,8 +87,8 @@ class TestBase(unittest.TestCase):
         "password": "password"
     }
     recover = {
-        "email" : "eve@gmail.com",
-        "newpassword": "mine1234"
+        "email" : "admin1@admin.com",
+        "newpassword": "password"
     }
     user_login_datai = {
         "email" : "admin3@admin.com",
@@ -124,15 +129,16 @@ class TestBase(unittest.TestCase):
     }
     
     super_admin_user = {
-        "associationId": '1',
-        "governmentId":'none',
-        "country":"Uganda",
-        "name" : "evea",
-        "email" : "super@super.com",
-        "user_group": "association",
-        "user_role":"superadmin",
-        "password": "mine1234",
-        "confirm_password":"mine1234"
+    "first_name":"aine",
+	"last_name":"kirabo",
+	"other_name":"mbabazi",
+	"photo":"some photo",
+	"associationId":1,
+	"governmentId":1,
+	"user_role":"superadmin",
+	"email":"admin2@admin.com",
+	"password":"password",
+	"country":"Uganda"
     }
 
 
@@ -148,15 +154,16 @@ class TestBase(unittest.TestCase):
     }
 
     user_with_invalid_password = {
-        "associationId": '1',
-        "governmentId": 'null',
-        "country":"Uganda",
-        "name" : "ever",
-        "email" : "eve@gmail.com",
-        "user_group": "association",
-        "user_role":"admin",
-        "password": "mine123",
-        "confirm_password":"mine123"
+    "first_name":"aine",
+	"last_name":"kirabo",
+	"other_name":"mbabazi",
+	"photo":"some photo",
+	"associationId":1,
+	"governmentId":1,
+	"user_role":"superadmin",
+	"email":"admin1@admin.com",
+	"password":"pass",
+	"country":"Uganda"
     }
 
     user_with_mismatched_password = {
@@ -172,51 +179,55 @@ class TestBase(unittest.TestCase):
     }
 
     user_with_invalid_name = {
-        "associationId": '1',
-        "governmentId": 'null',
-        "country":"Uganda",
-        "name" : '1234',
-        "email" : "eve@gmail.com",
-        "user_group": "association",
-        "user_role":"admin",
-        "password": "mine1234",
-        "confirm_password":"mine1234"
+    "first_name":"12345",
+	"last_name":"kirabo",
+	"other_name":"mbabazi",
+	"photo":"some photo",
+	"associationId":1,
+	"governmentId":1,
+	"user_role":"superadmin",
+	"email":"admin1@admin.com",
+	"password":"password",
+	"country":"Uganda"
     }
 
     user_with_invalid_email= {
-        "associationId": '1',
-        "governmentId": 'null',
-        "country":"Uganda",
-        "name" : "evem",
-        "email" : "eve.com",
-        "user_group": "association",
-        "user_role":"admin",
-        "password": "mine1234",
-        "confirm_password":"mine1234"
+    "first_name":"aine",
+	"last_name":"kirabo",
+	"other_name":"mbabazi",
+	"photo":"some photo",
+	"associationId":1,
+	"governmentId":1,
+	"user_role":"superadmin",
+	"email":"admin1admin.com",
+	"password":"password",
+	"country":"Uganda"
     }
 
     user_with_invalid_country = {
-        "associationId": '1',
-        "governmentId": 'null',
-        "country":'1234',
-        "name" : "evep",
-        "email" : "eve@gmail.com",
-        "user_group": "association",
-        "user_role":"admin",
-        "password": "mine1234",
-        "confirm_password":"mine1234"
+    "first_name":"aine",
+	"last_name":"kirabo",
+	"other_name":"mbabazi",
+	"photo":"some photo",
+	"associationId":1,
+	"governmentId":1,
+	"user_role":"superadmin",
+	"email":"admin1@admin.com",
+	"password":"password",
+	"country":"234"
     }
 
-    user_with_none_string_group= {
-        "associationId": '1',
-        "governmentId": 'null',
-        "country":"Uganda",
-        "name" : "evet",
-        "email" : "eve@gmail.com",
-        "user_group": '1234',
-        "user_role":"admin",
-        "password": "mine1234",
-        "confirm_password":"mine1234"
+    user_with_non_string_role= {
+    "first_name":"aine",
+	"last_name":"kirabo",
+	"other_name":"mbabazi",
+	"photo":"some photo",
+	"associationId":1,
+	"governmentId":1,
+	"user_role":"1234",
+	"email":"admin1@admin.com",
+	"password":"password",
+	"country":"uganda"
     }
 
     user_with_invalid_group= {
@@ -231,40 +242,42 @@ class TestBase(unittest.TestCase):
         "confirm_password":"mine1234"
     }
 
-    user_with_non_string_role = {
-        "associationId": '1',
-        "governmentId": 'null',
-        "country":"Uganda",
-        "name" : "eveg",
-        "email" : "eve@gmail.com",
-        "user_group": "association",
-        "user_role":'1234',
-        "password": "mine1234",
-        "confirm_password":"mine1234"
-    }
+    # user_with_non_string_role = {
+    #     "associationId": '1',
+    #     "governmentId": 'null',
+    #     "country":"Uganda",
+    #     "name" : "eveg",
+    #     "email" : "eve@gmail.com",
+    #     "user_group": "association",
+    #     "user_role":'1234',
+    #     "password": "mine1234",
+    #     "confirm_password":"mine1234"
+    # }
 
     user_with_invalid_role = {
-        "associationId": '1',
-        "governmentId": 'null',
-        "country":"Uganda",
-        "name" : "eves",
-        "email" : "eve@gmail.com",
-        "user_group": "association",
-        "user_role":"superuser",
-        "password": "mine1234",
-        "confirm_password":"mine1234"
+       "first_name":"aine",
+	"last_name":"kirabo",
+	"other_name":"mbabazi",
+	"photo":"some photo",
+	"associationId":1,
+	"governmentId":1,
+	"user_role":"role",
+	"email":"admin1@admin.com",
+	"password":"password",
+	"country":"uganda"
     }
 
     user_with_duplicate_mail = {
-        "associationId": '1',
-        "governmentId": 'null',
-        "country":"Uganda",
-        "name" : "eve",
-        "email" : "eve@gmail.com",
-        "user_group": "association",
-        "user_role":"admin",
-        "password": "mine1234",
-        "confirm_password":"mine1234"
+               "first_name":"aine",
+	"last_name":"kirabo",
+	"other_name":"mbabazi",
+	"photo":"some photo",
+	"associationId":1,
+	"governmentId":1,
+	"user_role":"admin",
+	"email":"admin1@admin.com",
+	"password":"password",
+	"country":"uganda"
     }
 
     user_with_invalid_associationId= {
@@ -313,8 +326,9 @@ class TestBase(unittest.TestCase):
     }
 
     association_with_invalid_name = {
-        "name": '1234',
-        "Location": "Uganda"
+         "governmentId": 1,
+        "name": "2",
+        "photo": "photo2"
     }
 
     association_with_invalid_location = {
@@ -374,7 +388,16 @@ class TestBase(unittest.TestCase):
         self.assertEqual(response['message'], 'login successful')
         self.user_access_token = response['auth_token']
         return self.user_access_token
-
+    def user_login1(self):
+        # self.sign_up1()
+        user_login = self.app_client.post("api/v1/auth/login", content_type="application/json", 
+            data=json.dumps(self.user1_login))
+        
+        self.assertEqual(user_login.status_code, 200)
+        response = json.loads(user_login.data)
+        self.assertEqual(response['message'], 'login successful')
+        self.user_access_token = response['auth_token']
+        return self.user_access_token
     def sign_up(self):
         token = self.superadmin_login()
         self.app_client.post("/api/v1/governments", content_type='application/json', 
@@ -387,6 +410,9 @@ class TestBase(unittest.TestCase):
         self.assertEqual(create_user.status_code, 201)
         response = json.loads(create_user.data)
         self.assertEqual(response['message'], 'Your account has been created')
+
+        self.assertEqual(response['message'], 'Your account has been created')
+    
     
     def sign_up_government(self):
         create_user = self.app_client.post("/api/v1/auth/signup", content_type='application/json', 
@@ -407,6 +433,11 @@ class TestBase(unittest.TestCase):
         self.assertEqual(response['message'], 'Your account has been created')
 
     def sign_up1(self):
+        token = self.superadmin_login()
+        self.app_client.post("/api/v1/governments", content_type='application/json', 
+            data=json.dumps(self.government_data), headers={'Authorization': f'Bearer {token}'})
+        self.app_client.post("/api/v1/associations", content_type='application/json', 
+            data=json.dumps(self.association_data), headers={'Authorization': f'Bearer {token}'})
         create_user = self.app_client.post("/api/v1/auth/signup", content_type='application/json', 
             data=json.dumps(self.user1))
         
@@ -427,6 +458,17 @@ class TestBase(unittest.TestCase):
         self.assertEqual(response['message'], 'Your account has been created')
 
     def sign_up_superadmin(self):
+        super_admin_login = self.app_client.post("api/v1/auth/login", content_type="application/json", 
+        data=json.dumps(self.super_admin_user_data))
+        self.assertEqual(super_admin_login.status_code, 200)
+        response = json.loads(super_admin_login.data)
+        self.assertEqual(response['message'], 'login successful')
+        token = response['auth_token']
+        # token = self.superadmin_login()
+        self.app_client.post("/api/v1/governments", content_type='application/json', 
+            data=json.dumps(self.government_data), headers={'Authorization': f'Bearer {token}'})
+        self.app_client.post("/api/v1/associations", content_type='application/json', 
+            data=json.dumps(self.association_data), headers={'Authorization': f'Bearer {token}'})
         create_user = self.app_client.post("/api/v1/auth/signup", content_type='application/json', 
             data=json.dumps(self.super_admin_user))
      

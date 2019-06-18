@@ -17,8 +17,20 @@ import datetime
 """
 
 
-@app.route("/api/v1/governments", methods=['POST'])
-@jwt_required
+@app.route("/api/v1/governments/sendmail/<toaddress>/<link>", methods=['GET'])
+
+def sendmail():
+    """
+        function to create a government
+    """
+    
+    return Government_Controller.sendmail(toaddress,link)
+
+"""
+    Endpoint for fetching all governments
+"""
+@app.route("/api/v1/governments/sendmail", methods=['POST'])
+
 def create_government():
     """
         function to create a government

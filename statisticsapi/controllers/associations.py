@@ -58,7 +58,7 @@ class Association_Controller:
         validate_input = Validator()
 
         if not (validate_input.validate_string_input(name)):
-            return jsonify({"message": "Name field should conamentain strings "}), 400
+            return jsonify({"message": "Name field should contain strings "}), 400
                             
         association=con.fetch_associations_by_name(name)
         
@@ -93,41 +93,41 @@ class Association_Controller:
                 return jsonify({"message": "No associations found"}), 404
         
             return jsonify({
-            columns: [
+            'columns': [
             {
-              label: 'associationId',
-              field: 'associationId',
-              sort: 'asc'
+              'label': 'associationId',
+              'field': 'associationId',
+              'sort': 'asc'
             },
             {
-              label: 'governmentId',
-              field: 'associationId',
-              sort: 'asc'
+              'label': 'governmentId',
+              'field': 'associationId',
+              'sort': 'asc'
             },{
-              label: 'name',
-              field: 'name',
-              sort: 'asc'
+              'label': 'name',
+              'field': 'name',
+              'sort': 'asc'
             },{
-              label: 'photo',
-              field: 'photo',
-              sort: 'asc'
+              'label': 'photo',
+              'field': 'photo',
+              'sort': 'asc'
             },{
-              label: 'created_by',
-              field: 'created_by',
-              sort: 'asc'
+              'label': 'created_by',
+              'field': 'created_by',
+              'sort': 'asc'
             },
             {
-              label: 'updated-by',
-              field: 'updated_by',
-              sort: 'asc'
+              'label': 'updated-by',
+              'field': 'updated_by',
+              'sort': 'asc'
             },
             {
-              label: 'updated-at',
-              field: 'updated_at',
-              sort: 'asc'
+              'label': 'updated-at',
+              'field': 'updated_at',
+              'sort': 'asc'
             }],
             
-                'associations' :associations
+                'rows' :associations
                 
             
             }), 200
@@ -179,6 +179,73 @@ class Association_Controller:
             return jsonify({"message": "association with that id doesnot exist"}), 404
 
         return jsonify({'association': single_association}), 200
+    
+    def fetch_association_users(associationId):
+        """
+            controller fetch specific association
+            :return association:
+        """
+
+        single_association = con.get_single_association(associationId)
+        if not single_association or single_association == [] or len(single_association) == 0:
+            return jsonify({"message": "association with that id doesnot exist"}), 404
+
+        association_users = con.get_all_association_users(associationId)
+        if not association_users or association_users == [] or len(association_users) == 0:
+            return jsonify({"message": "association with that id has no users"}), 404
+
+        return jsonify({'columns': [
+            {
+              'label': 'userId',
+              'field': 'userId',
+              'sort': 'asc'
+            },{
+              'label': 'first_name',
+              'field': 'first_name',
+              'sort': 'asc'
+            },{
+              'label': 'last_name',
+              'field': 'last_name',
+              'sort': 'asc'
+            },{
+              'label': 'other_name',
+              'field': 'other_name',
+              'sort': 'asc'
+            },{
+              'label': 'associationId',
+              'field': 'associationId',
+              'sort': 'asc'
+            },{
+              'label': 'governmentId',
+              'field': 'governmentId',
+              'sort': 'asc'
+            },{
+              'label': 'photo',
+              'field': 'photo',
+              'sort': 'asc'
+            },{
+              'label': 'email',
+              'field': 'email',
+              'sort': 'asc'
+            },{
+              'label': 'country',
+              'field': 'country',
+              'sort': 'asc'
+            },{
+              'label': 'created_by',
+              'field': 'created_by',
+              'sort': 'asc'
+            },
+            {
+              'label': 'updated-by',
+              'field': 'updated_by',
+              'sort': 'asc'
+            },{
+              'label': 'updated-at',
+              'field': 'updated_at',
+              'sort': 'asc'
+            }],
+            'rows': association_users}), 200
 
 
     def cancel_specific_association(associationId):

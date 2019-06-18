@@ -193,13 +193,14 @@ class User_Controller:
         first_name = request_data['first_name']
         last_name = request_data['last_name']
         other_name = request_data['other_name']
-        updated_by, userId = current_user_id
+        updated_by = current_user_id
+        userId = current_user_id
         updated_at = datetime.date.today().strftime('%Y-%m-%d')
         
         if (user['first_name'] == first_name and user['last_name'] == last_name and user['other_name'] == other_name):
             return jsonify({"message": "The name is already upto date"}), 400
             
-        validate_name = Validator().validate_string_input(name)
+        validate_input = Validator()
         if not (validate_input.validate_string_input(first_name)):
             return jsonify({"message": "name must be a string"}), 400
 
@@ -211,7 +212,7 @@ class User_Controller:
         
         role = user['user_role']
         if role == 'admin' or role == 'superadmin' or current_user_id == id:
-            con.update_user_name(first_name, last_name, othername, updated_by,updated_at,userId )
+            con.update_user_name(first_name, last_name, other_name, updated_by,updated_at,userId )
             edited_data = con.get_single_user(userId)
             return jsonify({"message": "Your name has been updated ",
                         "updated user credentials": edited_data}), 200
@@ -278,7 +279,7 @@ class User_Controller:
         
         User = con.get_single_user(current_user_id)
         user_to_edit = con.get_single_user(userId)
-        updated_by =userIduserId
+        updated_by =userId
         updated_at = datetime.date.today().strftime('%Y-%m-%d')
 
         if not user_to_edit or user_to_edit == None:
