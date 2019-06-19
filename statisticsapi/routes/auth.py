@@ -26,7 +26,7 @@ def signup():
     Endpoint for decoding the token
 """
 @app.route('/api/v1/auth/decode/<token>', methods=['GET'])
-def decode():
+def decode(token):
     return Auth.decode_jwt_token(token)
 """
     Endpoint for logging in a user
