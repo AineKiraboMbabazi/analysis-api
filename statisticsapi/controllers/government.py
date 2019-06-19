@@ -70,42 +70,42 @@ class Government_Controller:
         
         role = User['user_role']
         
-        if  role == 'superadmin':
+        if  role == 'super_admin':
             governments = con.get_all_governments()
 
             if governments == [] or len(governments) ==0:
                 return jsonify({"message": "No governments found"}), 404
 
             return jsonify({
-            columns: [
+            'columns': [
             {
-              label: 'governmentId',
-              field: 'associationId',
-              sort: 'asc'
+              'label': 'governmentId',
+              'field': 'associationId',
+              'sort': 'asc'
             },{
-              label: 'name',
-              field: 'name',
-              sort: 'asc'
+              'label': 'name',
+              'field': 'name',
+              'sort': 'asc'
             },{
-              label: 'photo',
-              field: 'photo',
-              sort: 'asc'
+              'label': 'photo',
+              'field': 'photo',
+              'sort': 'asc'
             },{
-              label: 'created_by',
-              field: 'created_by',
-              sort: 'asc'
+              'label': 'created_by',
+              'field': 'created_by',
+              'sort': 'asc'
             },
             {
-              label: 'updated-by',
-              field: 'updated_by',
-              sort: 'asc'
+              'label': 'updated-by',
+              'field': 'updated_by',
+              'sort': 'asc'
             },{
-              label: 'updated-at',
-              field: 'updated_at',
-              sort: 'asc'
+              'label': 'updated-at',
+              'field': 'updated_at',
+              'sort': 'asc'
             }],
             
-                'governments': governments
+                'rows': governments
             
             }), 200
             
@@ -126,7 +126,7 @@ class Government_Controller:
         if user['status'] == 0 or user['status'] == '0':
             return jsonify({"message": "Trying to edit government using a deactivated account"}), 400
             
-        if user_role == 'superadmin':
+        if user_role == 'super_admin':
             governments = con.fetch_pending_government()
 
             if  len(governments) == 0 or governments == []:
@@ -173,7 +173,7 @@ class Government_Controller:
         if User['status'] == 0 or User['status'] == '0':
             return jsonify({"message": "Trying to edit government using a deactivated account"}), 400
             
-        if role == 'superadmin':
+        if role == 'super_admin':
             con.cancel_government(governmentId)
             return jsonify({"message": "Your government has been cancelled"}), 200
 
@@ -219,7 +219,7 @@ class Government_Controller:
         if not validate_name:
             return jsonify({"message": "name must be a non empty string"}), 400
 
-        if  role == 'superadmin' or role == 'govt_superadmin' or role == 'govt_admin':
+        if  role == 'super_admin' or role == 'govt_super_admin' or role == 'govt_admin':
             con.update_govt_name(governmentId, name,updated_by,updated_at)
             government1 = con.get_single_government(governmentId)
             return jsonify({"message": "Your name has been updated ",
@@ -262,7 +262,7 @@ class Government_Controller:
             return jsonify({"message": "The photo is already upto date"}), 400
             
 
-        if  role == 'superadmin' or role == 'govt_superadmin' or role == 'govt_admin':
+        if  role == 'super_admin' or role == 'govt_super_admin' or role == 'govt_admin':
             con.update_govt_photo(photo, updated_by,updated_at,governmentId )
             government1 = con.get_single_government(governmentId)
             return jsonify({"message": "Your name has been updated ",
@@ -294,7 +294,7 @@ class Government_Controller:
             
         role = User['user_role']
 
-        if role == 'superadmin'or role == 'govt_superadmin' or role == 'govt_admin':
+        if role == 'super_admin'or role == 'govt_super_admin' or role == 'govt_admin':
             con.delete_government(governmentId)
             return jsonify({"message": "Your government has been deleted"}), 200
 

@@ -42,7 +42,7 @@ class Association_Controller:
             
         role = user['user_role']
 
-        if role == 'superadmin':
+        if role == 'super_admin':
             status = 'active'
 
         status = 'pending'
@@ -88,46 +88,46 @@ class Association_Controller:
         associations = con.get_all_associations()
      
         
-        if role == 'superadmin':
+        if role == 'super_admin':
             if len (associations) == 0 or associations == None or associations == []:
                 return jsonify({"message": "No associations found"}), 404
         
             return jsonify({
-            columns: [
+            'columns': [
             {
-              label: 'associationId',
-              field: 'associationId',
-              sort: 'asc'
+              'label': 'associationId',
+              'field': 'associationId',
+              'sort': 'asc'
             },
             {
-              label: 'governmentId',
-              field: 'associationId',
-              sort: 'asc'
+              'label': 'governmentId',
+              'field': 'associationId',
+              'sort': 'asc'
             },{
-              label: 'name',
-              field: 'name',
-              sort: 'asc'
+              'label': 'name',
+              'field': 'name',
+              'sort': 'asc'
             },{
-              label: 'photo',
-              field: 'photo',
-              sort: 'asc'
+              'label': 'photo',
+              'field': 'photo',
+              'sort': 'asc'
             },{
-              label: 'created_by',
-              field: 'created_by',
-              sort: 'asc'
+              'label': 'created_by',
+              'field': 'created_by',
+              'sort': 'asc'
             },
             {
-              label: 'updated-by',
-              field: 'updated_by',
-              sort: 'asc'
+              'label': 'updated-by',
+              'field': 'updated_by',
+              'sort': 'asc'
             },
             {
-              label: 'updated-at',
-              field: 'updated_at',
-              sort: 'asc'
+              'label': 'updated-at',
+              'field': 'updated_at',
+              'sort': 'asc'
             }],
             
-                'associations' :associations
+                'rows' :associations
                 
             
             }), 200
@@ -158,7 +158,7 @@ class Association_Controller:
 
         associations = con.fetch_pending_association()
 
-        if user_role == 'superadmin':
+        if user_role == 'super_admin':
             if  len (associations) == 0 or associations == None or associations == []:
                 return jsonify({"message": "No pending associations found "}), 404
 
@@ -201,7 +201,7 @@ class Association_Controller:
         if User['status'] == 0 or User['status'] == '0':
             return jsonify({"message":"Trying to edit association using a deactivated account"}),400
 
-        if role == 'superadmin':
+        if role == 'super_admin':
             con.cancel_association(associationId)
             return jsonify({"message": "Your association has been cancelled"}), 200
 
@@ -246,7 +246,7 @@ class Association_Controller:
         if not validate_name:
             return jsonify({"message": "name must be a non empty string"}), 400
 
-        if association['created_by'] == current_user_id or role == 'superadmin':
+        if association['created_by'] == current_user_id or role == 'super_admin':
             con.update_photo(photo, updated_by,updated_at,associationId )
             association1 = con.get_single_association(associationId)
             return jsonify({"message": "Your name has been updated ",
@@ -293,7 +293,7 @@ class Association_Controller:
         if not validate_name:
             return jsonify({"message": "name must be a non empty string"}), 400
 
-        if association['created_by'] == current_user_id or role == 'superadmin':
+        if association['created_by'] == current_user_id or role == 'super_admin':
             con.update_association_name(name, updated_by,updated_at,associationId )
             association1 = con.get_single_association(associationId)
             return jsonify({"message": "Your name has been updated ",
@@ -325,7 +325,7 @@ class Association_Controller:
             return jsonify({"message":"user with id not found"}),404
         role = User['user_role']
 
-        if role == 'superadmin':
+        if role == 'super_admin':
             con.delete_association(associationId)
             return jsonify({"message": "Your association has been deleted"}), 200
 
@@ -352,7 +352,7 @@ class Association_Controller:
 
         user = con.get_single_user(current_user_id)
 
-        if user['user_role'] == 'superadmin':
+        if user['user_role'] == 'super_admin':
             con.approve_association(associationId)
             return jsonify({"message": "The association has been approved"}), 200
 
