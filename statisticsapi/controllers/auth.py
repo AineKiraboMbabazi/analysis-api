@@ -68,10 +68,14 @@ class Auth():
                                         expires_delta=expires)
 
         return jsonify({
+            'first_name':check_user['first_name'],
+            'last_name':check_user['last_name'],
+            'other_name':check_user['other_name'],
             'role':check_user['user_role'],
             'id':check_user['userId'],
             'message': 'login successful',
-            'auth_token': auth_token}), 200
+            'auth_token': auth_token
+            }), 200
 
     def recover_password():
         """
