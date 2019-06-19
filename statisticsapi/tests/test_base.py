@@ -364,6 +364,7 @@ class TestBase(unittest.TestCase):
         response = json.loads(super_admin_login.data)
         self.assertEqual(response['message'], 'login successful')
         self.super_admin_access_token = response['auth_token']
+
         return(self.super_admin_access_token)
         
     def user_login_government_user(self):
@@ -402,6 +403,7 @@ class TestBase(unittest.TestCase):
         token = self.superadmin_login()
         self.app_client.post("/api/v1/governments", content_type='application/json', 
             data=json.dumps(self.government_data), headers={'Authorization': f'Bearer {token}'})
+        
         self.app_client.post("/api/v1/associations", content_type='application/json', 
             data=json.dumps(self.association_data), headers={'Authorization': f'Bearer {token}'})
         create_user =self.app_client.post("/api/v1/auth/signup", content_type='application/json', 

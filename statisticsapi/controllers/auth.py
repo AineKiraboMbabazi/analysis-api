@@ -3,7 +3,7 @@ import os
 import datetime
 from passlib.hash import pbkdf2_sha256 as sha256
 from flask_jwt_extended import (
-    JWTManager, create_access_token, jwt_required, get_jwt_identity)
+    JWTManager, create_access_token, jwt_required,decode_token, get_jwt_identity)
 from flask import request, jsonify
 from statisticsapi.models.users import User
 from statisticsapi.controllers.users import User_Controller
@@ -15,6 +15,9 @@ from statisticsapi.controllers.database import DatabaseConnection
 
 def verify_hash(password, hash):
     return sha256.verify(password, hash)
+
+def decode_jwt_token(authorization_token):
+        return(decode_token(authorization_token,app.config.get('SECRET_KEY'))['identity'])
 
 class Auth():
 
@@ -63,7 +66,10 @@ class Auth():
         
         auth_token = create_access_token(identity=check_user['userId'],
                                         expires_delta=expires)
+
         return jsonify({
+            'role':check_user['user_role'],
+            'id':check_user['userId'],
             'message': 'login successful',
             'auth_token': auth_token}), 200
 

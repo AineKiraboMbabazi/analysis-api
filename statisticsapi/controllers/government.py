@@ -63,8 +63,6 @@ class Government_Controller:
 
         if not (validate_input.validate_string_input(name)):
             return jsonify({"message": "Name field should contain strings "}), 400
-
-        
                             
         government=con.fetch_governments_by_name(name)
         

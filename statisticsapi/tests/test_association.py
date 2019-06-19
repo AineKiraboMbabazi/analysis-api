@@ -401,257 +401,257 @@ class TestAssociation(TestBase):
         response = json.loads(association.data)
         self.assertEqual(response['message'], "Your name has been updated ")
     
-#     def test_cant_update_association_without_token(self):
+    def test_cant_update_association_without_token(self):
 
-#         self.sign_up()
-#         token = self.user_login()
-#         self.app_client.post("/api/v1/associations", content_type="application/json", 
-#             data=json.dumps(self.association_data), headers = {'Authorization': f'Bearer {token}'})
-#         association = self.app_client.put("/api/v1/associations/name/1", content_type="application/json", 
-#             data=json.dumps(self.update_name_data))
+        self.sign_up()
+        token = self.user_login()
+        self.app_client.post("/api/v1/associations", content_type="application/json", 
+            data=json.dumps(self.association_data), headers = {'Authorization': f'Bearer {token}'})
+        association = self.app_client.put("/api/v1/associations/name/1", content_type="application/json", 
+            data=json.dumps(self.update_name_data))
 
-#         self.assertEqual(association.status_code, 401)
-#         response = json.loads(association.data)
-#         self.assertEqual(response['msg'], 'Missing Authorization Header')
+        self.assertEqual(association.status_code, 401)
+        response = json.loads(association.data)
+        self.assertEqual(response['msg'], 'Missing Authorization Header')
 
-#     def test_cant_update_association_with_missing_fields(self):
+    def test_cant_update_association_with_missing_fields(self):
 
-#         self.sign_up()
-#         token = self.user_login()
-#         self.app_client.post("/api/v1/associations", content_type="application/json", 
-#             data=json.dumps(self.association_data), headers = {'Authorization': f'Bearer {token}'})
-#         association = self.app_client.put("/api/v1/associations/name/1", content_type="application/json", 
-#             data=json.dumps(self.update_name_data1), headers = {'Authorization': f'Bearer {token}'})
+        self.sign_up()
+        token = self.user_login()
+        self.app_client.post("/api/v1/associations", content_type="application/json", 
+            data=json.dumps(self.association_data), headers = {'Authorization': f'Bearer {token}'})
+        association = self.app_client.put("/api/v1/associations/name/1", content_type="application/json", 
+            data=json.dumps(self.update_name_data1), headers = {'Authorization': f'Bearer {token}'})
 
-#         self.assertEqual(association.status_code, 400)
-#         response = json.loads(association.data)
-#         self.assertEqual(response['message'], 'Some fields are missing')
+        self.assertEqual(association.status_code, 400)
+        response = json.loads(association.data)
+        self.assertEqual(response['message'], 'Some fields are missing')
         
-#     def test_cant_update_association_with_invalid_name(self):
+    def test_cant_update_association_with_invalid_name(self):
 
-#         self.sign_up()
-#         token = self.user_login()
-#         self.app_client.post("/api/v1/associations", content_type="application/json", 
-#             data=json.dumps(self.association_data), headers = {'Authorization': f'Bearer {token}'})
-#         association = self.app_client.put("/api/v1/associations/name/1", content_type="application/json", 
-#             data=json.dumps(self.update_name_data2), headers = {'Authorization': f'Bearer {token}'})
+        self.sign_up()
+        token = self.user_login()
+        self.app_client.post("/api/v1/associations", content_type="application/json", 
+            data=json.dumps(self.association_data), headers = {'Authorization': f'Bearer {token}'})
+        association = self.app_client.put("/api/v1/associations/name/1", content_type="application/json", 
+            data=json.dumps(self.update_name_data2), headers = {'Authorization': f'Bearer {token}'})
 
-#         self.assertEqual(association.status_code, 400)
-#         response = json.loads(association.data)
-#         self.assertEqual(response['message'], 'name must be a non empty string')
+        self.assertEqual(association.status_code, 400)
+        response = json.loads(association.data)
+        self.assertEqual(response['message'], 'name must be a non empty string')
         
-#     def test_cant_update_association_with_missing_association(self):
+    def test_cant_update_association_with_missing_association(self):
 
-#         self.sign_up()
-#         token = self.user_login()
+        self.sign_up()
+        token = self.user_login()
    
-#         association = self.app_client.put("/api/v1/associations/name/1", content_type="application/json", 
-#             data=json.dumps(self.update_name_data), headers = {'Authorization': f'Bearer {token}'})
+        association = self.app_client.put("/api/v1/associations/name/1", content_type="application/json", 
+            data=json.dumps(self.update_name_data), headers = {'Authorization': f'Bearer {token}'})
 
-#         self.assertEqual(association.status_code, 404)
-#         response = json.loads(association.data)
-#         self.assertEqual(response['message'], 'association not found')
+        self.assertEqual(association.status_code, 404)
+        response = json.loads(association.data)
+        self.assertEqual(response['message'], 'association not found')
         
-#     def test_cant_update_association_with_inactive_account(self):
+    def test_cant_update_association_with_inactive_account(self):
 
-#         self.sign_up()
-#         token = self.user_login()
-#         self.app_client.post("/api/v1/associations", content_type="application/json", 
-#             data=json.dumps(self.association_data), headers={'Authorization': f'Bearer {token}'})
+        self.sign_up()
+        token = self.user_login()
+        self.app_client.post("/api/v1/associations", content_type="application/json", 
+            data=json.dumps(self.association_data), headers={'Authorization': f'Bearer {token}'})
 
-#         self.app_client.put("/api/v1/users/delete/1", content_type="application/json", headers={'Authorization': f'Bearer {token}'})
+        self.app_client.put("/api/v1/users/delete/1", content_type="application/json", headers={'Authorization': f'Bearer {token}'})
 
-#         association = self.app_client.put("/api/v1/associations/name/1", content_type="application/json", 
-#             data=json.dumps(self.update_name_data), headers = {'Authorization': f'Bearer {token}'})
+        association = self.app_client.put("/api/v1/associations/name/1", content_type="application/json", 
+            data=json.dumps(self.update_name_data), headers = {'Authorization': f'Bearer {token}'})
        
-#         self.assertEqual(association.status_code, 400)
-#         response = json.loads(association.data)
-#         self.assertEqual(response['message'], 'user account inactive')
+        self.assertEqual(association.status_code, 400)
+        response = json.loads(association.data)
+        self.assertEqual(response['message'], 'user account inactive')
 
-#     def test_cant_update_updated_association(self):
+    def test_cant_update_updated_association(self):
 
-#         self.sign_up_superadmin()
-#         token = self.superadmin_login()
-#         self.app_client.post("/api/v1/associations", content_type="application/json", 
-#             data=json.dumps(self.association_data), headers={'Authorization': f'Bearer {token}'})
+        self.sign_up_superadmin()
+        token = self.superadmin_login()
+        self.app_client.post("/api/v1/associations", content_type="application/json", 
+            data=json.dumps(self.association_data), headers={'Authorization': f'Bearer {token}'})
        
-#         self.app_client.put("/api/v1/associations/name/1", content_type="application/json", 
-#             data=json.dumps(self.update_name_data), headers={'Authorization': f'Bearer {token}'})
+        self.app_client.put("/api/v1/associations/name/1", content_type="application/json", 
+            data=json.dumps(self.update_name_data), headers={'Authorization': f'Bearer {token}'})
 
-#         association = self.app_client.put("/api/v1/associations/name/1", content_type="application/json", 
-#             data=json.dumps(self.update_name_data), headers = {'Authorization': f'Bearer {token}'})
-#         self.assertEqual(association.status_code, 400)
-#         response = json.loads(association.data)
-#         self.assertEqual(response['message'], 'The name is already upto date')
+        association = self.app_client.put("/api/v1/associations/name/1", content_type="application/json", 
+            data=json.dumps(self.update_name_data), headers = {'Authorization': f'Bearer {token}'})
+        self.assertEqual(association.status_code, 400)
+        response = json.loads(association.data)
+        self.assertEqual(response['message'], 'The name is already upto date')
 
-#     def test_cant_update_association_name_without_authorisation(self):
+    # def test_cant_update_association_name_without_authorisation(self):
 
-#         self.sign_up_superadmin()
-#         token = self.superadmin_login()
-#         self.app_client.post("/api/v1/associations", content_type="application/json", 
-#             data=json.dumps(self.association_data), headers={'Authorization': f'Bearer {token}'})
+    #     self.sign_up_superadmin()
+    #     token = self.superadmin_login()
+    #     self.app_client.post("/api/v1/associations", content_type="application/json", 
+    #         data=json.dumps(self.association_data), headers={'Authorization': f'Bearer {token}'})
         
-#         self.sign_up()
-#         token = self.user_login()
-#         association = self.app_client.put("/api/v1/associations/name/1", content_type="application/json", 
-#             data=json.dumps(self.update_name_data), headers={'Authorization': f'Bearer {token}'})
+    #     self.sign_up()
+    #     token = self.user_login()
+    #     association = self.app_client.put("/api/v1/associations/name/1", content_type="application/json", 
+    #         data=json.dumps(self.update_name_data), headers={'Authorization': f'Bearer {token}'})
         
        
-#         self.assertEqual(association.status_code, 400)
-#         response = json.loads(association.data)
-#         self.assertEqual(response['message'], 'unauthorised access')
+    #     self.assertEqual(association.status_code, 400)
+    #     response = json.loads(association.data)
+    #     self.assertEqual(response['message'], 'unauthorised access')
 
 
-#     #############################################################################################
-#     #                                                                                           #
-#     #                            DELETE ASSOCIATION TESTCASES                                   #
-#     #                                                                                           #
-#     #############################################################################################
+    #############################################################################################
+    #                                                                                           #
+    #                            DELETE ASSOCIATION TESTCASES                                   #
+    #                                                                                           #
+    #############################################################################################
 
-#     def test_can_delete_association_successfully(self):
+    def test_can_delete_association_successfully(self):
 
-#         self.sign_up_superadmin()
-#         token = self.superadmin_login()
-#         self.app_client.post("/api/v1/associations", content_type="application/json", 
-#             data=json.dumps(self.association_data), headers = {'Authorization': f'Bearer {token}'})
-#         association = self.app_client.put("/api/v1/associations/delete/1", content_type="application/json", 
-#             data=json.dumps(self.update_name_data), headers = {'Authorization': f'Bearer {token}'})
+        self.sign_up_superadmin()
+        token = self.superadmin_login()
+        self.app_client.post("/api/v1/associations", content_type="application/json", 
+            data=json.dumps(self.association_data), headers = {'Authorization': f'Bearer {token}'})
+        association = self.app_client.put("/api/v1/associations/delete/1", content_type="application/json", 
+            data=json.dumps(self.update_name_data), headers = {'Authorization': f'Bearer {token}'})
         
-#         self.assertEqual(association.status_code, 200)
-#         response = json.loads(association.data)
-#         self.assertEqual(response['message'], "Your association has been deleted")
+        self.assertEqual(association.status_code, 200)
+        response = json.loads(association.data)
+        self.assertEqual(response['message'], "Your association has been deleted")
 
-#     def test_cant_delete_association_without_token(self):
+    def test_cant_delete_association_without_token(self):
 
-#         self.sign_up_superadmin()
-#         token = self.superadmin_login()
-#         self.app_client.post("/api/v1/associations", content_type="application/json", 
-#             data=json.dumps(self.association_data), headers = {'Authorization': f'Bearer {token}'})
-#         association = self.app_client.put("/api/v1/associations/delete/1", content_type="application/json", 
-#             data=json.dumps(self.update_name_data))
+        self.sign_up_superadmin()
+        token = self.superadmin_login()
+        self.app_client.post("/api/v1/associations", content_type="application/json", 
+            data=json.dumps(self.association_data), headers = {'Authorization': f'Bearer {token}'})
+        association = self.app_client.put("/api/v1/associations/delete/1", content_type="application/json", 
+            data=json.dumps(self.update_name_data))
         
-#         self.assertEqual(association.status_code, 401)
-#         response = json.loads(association.data)
-#         self.assertEqual(response['msg'], "Missing Authorization Header")
+        self.assertEqual(association.status_code, 401)
+        response = json.loads(association.data)
+        self.assertEqual(response['msg'], "Missing Authorization Header")
 
-#     def test_cant_delete_association_which_doesnt_exist(self):
+    def test_cant_delete_association_which_doesnt_exist(self):
 
-#         self.sign_up_superadmin()
-#         token = self.superadmin_login()
-#         self.app_client.post("/api/v1/associations", content_type="application/json", 
-#             data=json.dumps(self.association_data), headers = {'Authorization': f'Bearer {token}'})
-#         association = self.app_client.put("/api/v1/associations/delete/2", content_type="application/json", 
-#             data=json.dumps(self.update_name_data), headers = {'Authorization': f'Bearer {token}'})
+        self.sign_up_superadmin()
+        token = self.superadmin_login()
+        self.app_client.post("/api/v1/associations", content_type="application/json", 
+            data=json.dumps(self.association_data), headers = {'Authorization': f'Bearer {token}'})
+        association = self.app_client.put("/api/v1/associations/delete/2", content_type="application/json", 
+            data=json.dumps(self.update_name_data), headers = {'Authorization': f'Bearer {token}'})
         
-#         self.assertEqual(association.status_code, 404)
-#         response = json.loads(association.data)
-#         self.assertEqual(response['message'], "The association doesnt exist")
+        self.assertEqual(association.status_code, 404)
+        response = json.loads(association.data)
+        self.assertEqual(response['message'], "The association doesnt exist")
 
-#     def test_cant_delete_association_which_doesnt_exist(self):
+    def test_cant_delete_association_which_doesnt_exist(self):
 
-#         self.sign_up_superadmin()
-#         token = self.superadmin_login()
-#         self.app_client.post("/api/v1/associations", content_type="application/json", 
-#             data=json.dumps(self.association_data), headers={'Authorization': f'Bearer {token}'})
+        self.sign_up_superadmin()
+        token = self.superadmin_login()
+        self.app_client.post("/api/v1/associations", content_type="application/json", 
+            data=json.dumps(self.association_data), headers={'Authorization': f'Bearer {token}'})
 
-#         self.app_client.put("/api/v1/associations/delete/1", content_type="application/json", 
-#             data=json.dumps(self.update_name_data), headers={'Authorization': f'Bearer {token}'})
+        self.app_client.put("/api/v1/associations/delete/1", content_type="application/json", 
+            data=json.dumps(self.update_name_data), headers={'Authorization': f'Bearer {token}'})
             
-#         association = self.app_client.put("/api/v1/associations/delete/1", content_type="application/json", 
-#             data=json.dumps(self.update_name_data), headers = {'Authorization': f'Bearer {token}'})
+        association = self.app_client.put("/api/v1/associations/delete/1", content_type="application/json", 
+            data=json.dumps(self.update_name_data), headers = {'Authorization': f'Bearer {token}'})
         
-#         self.assertEqual(association.status_code, 400)
-#         response = json.loads(association.data)
-#         self.assertEqual(response['message'], "Cant update an inactive association ")
+        self.assertEqual(association.status_code, 400)
+        response = json.loads(association.data)
+        self.assertEqual(response['message'], "Cant update an inactive association ")
 
-#     def test_cant_delete_association_with_non_exist_user_account(self):
+    def test_cant_delete_association_with_non_exist_user_account(self):
 
-#         self.sign_up_superadmin()
-#         token = self.superadmin_login()
-#         self.app_client.post("/api/v1/associations", content_type="application/json", 
-#             data=json.dumps(self.association_data), headers={'Authorization': f'Bearer {token}'})
+        self.sign_up_superadmin()
+        token = self.superadmin_login()
+        self.app_client.post("/api/v1/associations", content_type="application/json", 
+            data=json.dumps(self.association_data), headers={'Authorization': f'Bearer {token}'})
 
-#         self.app_client.put("/api/v1/users/delete/1", content_type="application/json", headers={'Authorization': f'Bearer {token}'})
+        self.app_client.put("/api/v1/users/delete/1", content_type="application/json", headers={'Authorization': f'Bearer {token}'})
             
-#         association = self.app_client.put("/api/v1/associations/delete/1", content_type="application/json", 
-#             data=json.dumps(self.update_name_data), headers = {'Authorization': f'Bearer {token}'})
+        association = self.app_client.put("/api/v1/associations/delete/1", content_type="application/json", 
+            data=json.dumps(self.update_name_data), headers = {'Authorization': f'Bearer {token}'})
         
-#         self.assertEqual(association.status_code, 404)
-#         response = json.loads(association.data)
-#         self.assertEqual(response['message'], "user with id not found")
+        self.assertEqual(association.status_code, 404)
+        response = json.loads(association.data)
+        self.assertEqual(response['message'], "user with id not found")
 
     
-#     def test_cant_delete_association_without_authorisation(self):
+    # def test_cant_delete_association_without_authorisation(self):
 
-#         self.sign_up_superadmin()
-#         token = self.superadmin_login()
-#         self.app_client.post("/api/v1/associations", content_type="application/json", 
-#             data=json.dumps(self.association_data), headers={'Authorization': f'Bearer {token}'})
-#         self.sign_up()
-#         token = self.user_login()
-#         association = self.app_client.put("/api/v1/associations/delete/1", content_type="application/json", 
-#             data=json.dumps(self.update_name_data), headers = {'Authorization': f'Bearer {token}'})
+    #     self.sign_up_superadmin()
+    #     token = self.superadmin_login()
+    #     self.app_client.post("/api/v1/associations", content_type="application/json", 
+    #         data=json.dumps(self.association_data), headers={'Authorization': f'Bearer {token}'})
+    #     self.sign_up()
+    #     token = self.user_login()
+    #     association = self.app_client.put("/api/v1/associations/delete/1", content_type="application/json", 
+    #         data=json.dumps(self.update_name_data), headers = {'Authorization': f'Bearer {token}'})
         
-#         self.assertEqual(association.status_code, 400)
-#         response = json.loads(association.data)
-#         self.assertEqual(response['message'], "unauthorised access")
+    #     self.assertEqual(association.status_code, 400)
+    #     response = json.loads(association.data)
+    #     self.assertEqual(response['message'], "unauthorised access")
 
-#     #############################################################################################
-#     #                                                                                           #
-#     #                            APPROVE ASSOCIATION TESTCASES                                  #
-#     #                                                                                           #
-#     #############################################################################################
-#     def test_can_approve_association_successfully(self):
+    #############################################################################################
+    #                                                                                           #
+    #                            APPROVE ASSOCIATION TESTCASES                                  #
+    #                                                                                           #
+    #############################################################################################
+    def test_can_approve_association_successfully(self):
 
-#         self.sign_up_superadmin()
-#         token = self.superadmin_login()
-#         self.app_client.post("/api/v1/associations", content_type="application/json", 
-#             data=json.dumps(self.association_data), headers={'Authorization': f'Bearer {token}'})
+        self.sign_up_superadmin()
+        token = self.superadmin_login()
+        self.app_client.post("/api/v1/associations", content_type="application/json", 
+            data=json.dumps(self.association_data), headers={'Authorization': f'Bearer {token}'})
      
-#         association = self.app_client.put("/api/v1/associations/approve/1", content_type="application/json", 
-#             data=json.dumps(self.update_name_data), headers = {'Authorization': f'Bearer {token}'})
-#         self.assertEqual(association.status_code, 200)
-#         response = json.loads(association.data)
-#         self.assertEqual(response['message'], "The association has been approved")
+        association = self.app_client.put("/api/v1/associations/approve/1", content_type="application/json", 
+            data=json.dumps(self.update_name_data), headers = {'Authorization': f'Bearer {token}'})
+        self.assertEqual(association.status_code, 200)
+        response = json.loads(association.data)
+        self.assertEqual(response['message'], "The association has been approved")
 
-#     def test_cant_approve_association_without_authorisation(self):
+    def test_cant_approve_association_without_authorisation(self):
 
-#         self.sign_up_superadmin()
-#         token = self.superadmin_login()
-#         self.app_client.post("/api/v1/associations", content_type="application/json", 
-#             data=json.dumps(self.association_data), headers={'Authorization': f'Bearer {token}'})
-#         self.sign_up()
-#         token = self.user_login()
-#         association = self.app_client.put("/api/v1/associations/approve/1", content_type="application/json", 
-#             data=json.dumps(self.update_name_data), headers = {'Authorization': f'Bearer {token}'})
-#         self.assertEqual(association.status_code, 400)
-#         response = json.loads(association.data)
-#         self.assertEqual(response['message'], "unauthorised access")
+        # self.sign_up_superadmin()
+        token = self.superadmin_login()
+        self.app_client.post("/api/v1/associations", content_type="application/json", 
+            data=json.dumps(self.association_data), headers={'Authorization': f'Bearer {token}'})
+        self.sign_up()
+        token = self.user_login()
+        association = self.app_client.put("/api/v1/associations/approve/1", content_type="application/json", 
+            data=json.dumps(self.update_name_data), headers = {'Authorization': f'Bearer {token}'})
+        self.assertEqual(association.status_code, 400)
+        response = json.loads(association.data)
+        self.assertEqual(response['message'], "unauthorised access")
 
-#     def test_cant_approve_association_which_is_upto_date(self):
+    def test_cant_approve_association_which_is_upto_date(self):
 
-#         self.sign_up_superadmin()
-#         token = self.superadmin_login()
-#         self.app_client.post("/api/v1/associations", content_type="application/json",data=json.dumps(self.association_data), headers={'Authorization': f'Bearer {token}'})
+        self.sign_up_superadmin()
+        token = self.superadmin_login()
+        self.app_client.post("/api/v1/associations", content_type="application/json",data=json.dumps(self.association_data), headers={'Authorization': f'Bearer {token}'})
 
-#         self.app_client.put("/api/v1/associations/approve/1", content_type="application/json",data=json.dumps(self.update_name_data), headers={'Authorization': f'Bearer {token}'})
+        self.app_client.put("/api/v1/associations/approve/1", content_type="application/json",data=json.dumps(self.update_name_data), headers={'Authorization': f'Bearer {token}'})
             
-#         association = self.app_client.put("/api/v1/associations/approve/1", content_type="application/json", 
-#             data=json.dumps(self.update_name_data), headers={'Authorization': f'Bearer {token}'})
+        association = self.app_client.put("/api/v1/associations/approve/1", content_type="application/json", 
+            data=json.dumps(self.update_name_data), headers={'Authorization': f'Bearer {token}'})
             
-#         self.assertEqual(association.status_code, 400)
-#         response = json.loads(association.data)
-#         self.assertEqual(response['message'], "The association is already approved")
+        self.assertEqual(association.status_code, 400)
+        response = json.loads(association.data)
+        self.assertEqual(response['message'], "The association is already approved")
 
 
-#     def test_cant_approve_association_without_token(self):
+    def test_cant_approve_association_without_token(self):
 
-#         self.sign_up_superadmin()
-#         token = self.superadmin_login()
-#         self.app_client.post("/api/v1/associations", content_type="application/json", 
-#             data=json.dumps(self.association_data), headers={'Authorization': f'Bearer {token}'})
+        self.sign_up_superadmin()
+        token = self.superadmin_login()
+        self.app_client.post("/api/v1/associations", content_type="application/json", 
+            data=json.dumps(self.association_data), headers={'Authorization': f'Bearer {token}'})
      
-#         association = self.app_client.put("/api/v1/associations/approve/1", content_type="application/json" )
-#         self.assertEqual(association.status_code, 401)
-#         response = json.loads(association.data)
-#         self.assertEqual(response['msg'], "Missing Authorization Header")
+        association = self.app_client.put("/api/v1/associations/approve/1", content_type="application/json" )
+        self.assertEqual(association.status_code, 401)
+        response = json.loads(association.data)
+        self.assertEqual(response['msg'], "Missing Authorization Header")
