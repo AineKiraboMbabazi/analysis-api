@@ -23,6 +23,12 @@ def signup():
     return Auth.create_user()
 
 """
+    Endpoint for decoding the token
+"""
+@app.route('/api/v1/auth/decode/<token>', methods=['GET'])
+def decode(token):
+    return Auth.decode_jwt_token(token)
+"""
     Endpoint for logging in a user
 """
 @app.route('/api/v1/auth/login', methods=['POST'])

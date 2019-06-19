@@ -450,7 +450,15 @@ class DatabaseConnection:
         users = self.dict_cursor.fetchall()
         return users
 
-    
+    def get_all_association_users(self,associationId):
+        """
+            Function to fetch all users
+        """
+
+        get_all = "SELECT * FROM statistic_user WHERE associationId = %s"
+        self.dict_cursor.execute(get_all,associationId)
+        users = self.dict_cursor.fetchall()
+        return users
 
     def get_pending_accounts(self):
         """
@@ -476,7 +484,7 @@ class DatabaseConnection:
         update_query = " UPDATE statistic_user SET photo=%s,updated_by=%s, updated_at=%s WHERE userId=%s"
         self.cursor.execute(update_query, (newphoto, updated_by,updated_at,userId ))
 
-    def update_user_name(self, first_name, last_name, othername, updated_by,updated_at,userId ):
+    def update_user_name(self, first_name, last_name, other_name, updated_by,updated_at,userId ):
         """
             Function to update_photo
 
@@ -487,8 +495,8 @@ class DatabaseConnection:
             :return updated object:
         """
 
-        update_query = " UPDATE statistic_user SET first_name=%s,last_name=%s,other_name,=%s,updated_by=%s, updated_at=%s WHERE userId=%s"
-        self.cursor.execute(update_query, (first_name, last_name, other_name, updated_by,updated_at,governmentId ))
+        update_query = " UPDATE statistic_user SET first_name=%s,last_name=%s,other_name=%s,updated_by=%s, updated_at=%s WHERE userId=%s"
+        self.cursor.execute(update_query, (first_name, last_name, other_name, updated_by,updated_at,userId ))
     
     def get_single_user(self, userId):
         """

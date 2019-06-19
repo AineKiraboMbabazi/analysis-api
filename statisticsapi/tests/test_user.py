@@ -55,7 +55,7 @@
         
 #         self.assertEqual(create_user.status_code, 400)
 #         response = json.loads(create_user.data)
-#         self.assertEqual(response['message'], 'name must be a string ')
+#         self.assertEqual(response['message'], 'name must be a string')
 
 #     def test_cannot_create_user_with_invalid_email(self):
 #         create_user = self.app_client.post("/api/v1/auth/signup", content_type='application/json', 
@@ -71,23 +71,9 @@
         
 #         self.assertEqual(create_user.status_code, 400)
 #         response = json.loads(create_user.data)
-#         self.assertEqual(response['message'], 'location Field should contain strings ')
+#         self.assertEqual(response['message'], 'country Field should contain a string ')
 
-#     def test_cannot_create_user_with_none_string_group(self):
-#         create_user = self.app_client.post("/api/v1/auth/signup", content_type='application/json', 
-#             data=json.dumps(self.user_with_none_string_group))
-        
-#         self.assertEqual(create_user.status_code, 400)
-#         response = json.loads(create_user.data)
-#         self.assertEqual(response['message'], 'user_group field should contain strings')
 
-#     def test_cannot_create_user_invalid_group(self):
-#         create_user = self.app_client.post("/api/v1/auth/signup", content_type='application/json', 
-#             data=json.dumps(self.user_with_invalid_group))
-        
-#         self.assertEqual(create_user.status_code, 400)
-#         response = json.loads(create_user.data)
-#         self.assertEqual(response['message'], 'invalid user group')
 
 #     def test_cannot_create_user_with_none_string_role(self):
 #         create_user = self.app_client.post("/api/v1/auth/signup", content_type='application/json', 
@@ -106,8 +92,7 @@
 #         self.assertEqual(response['message'], 'invalid user role')
 
 #     def test_cannot_create_user_with_duplicate_email(self):
-#         self.app_client.post("/api/v1/auth/signup", content_type='application/json', 
-#             data=json.dumps(self.user_with_duplicate_mail))
+#         self.sign_up()
 #         create_user = self.app_client.post("/api/v1/auth/signup", content_type='application/json', 
 #             data=json.dumps(self.user_with_duplicate_mail))
         
@@ -162,7 +147,7 @@
 #                                 headers={'Authorization': f'Bearer {token}'})
 #         self.assertEqual(users.status_code, 404)
 #         response = json.loads(users.data)
-#         self.assertEqual(response['message'], 'user with that id doesnot exist')
+#     #     self.assertEqual(response['message'], 'user with that id doesnot exist')
 
 #     def test_cant_get_user_details_for_deleted_user(self):
 #         self.sign_up()
@@ -184,35 +169,35 @@
 #         self.assertEqual(response['message'], 'Account has been deactivated')
 
 
-#     def test_cant_get_user_details_without_authorisation_details(self):
-#         self.sign_up()
-#         self.sign_up1()
-#         user_login = self.app_client.post("api/v1/auth/login", content_type="application/json", 
-#             data=json.dumps(self.user_login_data))
-#         self.assertEqual(user_login.status_code, 200)
-#         response = json.loads(user_login.data)
-#         self.assertEqual(response['message'], 'login successful')
-#         self.user_access_token = response['auth_token']
+# #     def test_cant_get_user_details_without_authorisation_details(self):
+# #         self.sign_up()
+# #         self.sign_up1()
+# #         user_login = self.app_client.post("api/v1/auth/login", content_type="application/json", 
+# #             data=json.dumps(self.user_login_data))
+# #         self.assertEqual(user_login.status_code, 200)
+# #         response = json.loads(user_login.data)
+# #         self.assertEqual(response['message'], 'login successful')
+# #         self.user_access_token = response['auth_token']
         
-#         token = self.user_access_token
-#         users = self.app_client.get('/api/v1/users/2',content_type='application/json',
-#                                 headers={'Authorization': f'Bearer {token}'})
-#         self.assertEqual(users.status_code, 400)
-#         response = json.loads(users.data)
-#         self.assertEqual(response['message'], 'Unauthorised access')
+# #         token = self.user_access_token
+# #         users = self.app_client.get('/api/v1/users/3',content_type='application/json',
+# #                                 headers={'Authorization': f'Bearer {token}'})
+# #         self.assertEqual(users.status_code, 401)
+# #         response = json.loads(users.data)
+# #         self.assertEqual(response['message'], 'Unauthorised access')
 
     
 #     #############################################################################################
-#     #                                                                                           #
-#     #                             FETCH ALL USERS TESTCASES                                     #
-#     #                                                                                           #
-#     #############################################################################################
+# #     #                                                                                           #
+# #     #                             FETCH ALL USERS TESTCASES                                     #
+# #     #                                                                                           #
+# #     #############################################################################################
 
 #     def test_can_get_all_users_successfully(self):
 #         self.sign_up()
-#         self.sign_up_superadmin()
+        
 #         user_login = self.app_client.post("api/v1/auth/login", content_type="application/json", 
-#             data=json.dumps(self.super_admin_user_data))
+#             data=json.dumps(self.user_login_data))
 #         self.assertEqual(user_login.status_code, 200)
 #         response = json.loads(user_login.data)
 #         self.assertEqual(response['message'], 'login successful')
@@ -225,39 +210,50 @@
 
 #     def test_cant_get_all_without_token(self):
 #         self.sign_up()
-#         self.sign_up_superadmin()
+      
 #         user_login = self.app_client.post("api/v1/auth/login", content_type="application/json", 
-#             data=json.dumps(self.super_admin_user_data))
+#             data=json.dumps(self.user_login_data))
 #         self.assertEqual(user_login.status_code, 200)
 #         response = json.loads(user_login.data)
 #         self.assertEqual(response['message'], 'login successful')
 #         users = self.app_client.get('/api/v1/users',content_type='application/json')
 #         self.assertEqual(users.status_code, 401)
 
-#     def test_cant_get_all_users_without_access_rights(self):
-#         self.sign_up()
-#         self.sign_up_superadmin()
-#         user_login = self.app_client.post("api/v1/auth/login", content_type="application/json", 
-#             data=json.dumps(self.user_login_data))
-#         self.assertEqual(user_login.status_code, 200)
-#         response = json.loads(user_login.data)
-#         self.assertEqual(response['message'], 'login successful')
-#         self.user_access_token = response['auth_token']
+# #     def test_cant_get_all_users_without_access_rights(self):
+# #         self.sign_up()
+# #         token = self.superadmin_login()
+# #         self.app_client.post("/api/v1/governments", content_type='application/json', 
+# #             data=json.dumps(self.government_data), headers={'Authorization': f'Bearer {token}'})
+# #         self.app_client.post("/api/v1/associations", content_type='application/json', 
+# #             data=json.dumps(self.association_data), headers={'Authorization': f'Bearer {token}'})
+# #         create_user =self.app_client.post("/api/v1/auth/signup", content_type='application/json', 
+# #             data=json.dumps(self.user1))
         
-#         token = self.user_access_token
-#         users = self.app_client.get('/api/v1/users',content_type='application/json',
-#                                 headers={'Authorization': f'Bearer {token}'})
-#         self.assertEqual(users.status_code, 401)
-#         response = json.loads(users.data)
-#         self.assertEqual(response['message'], 'Unauthorised access')
+# #         self.assertEqual(create_user.status_code, 201)
+# #         response = json.loads(create_user.data)
+# #         self.assertEqual(response['message'], 'Your account has been created')
+    
+# #         user_login = self.app_client.post("api/v1/auth/login", content_type="application/json", 
+# #             data=json.dumps(self.user1_login))
+# #         self.assertEqual(user_login.status_code, 200)
+# #         response = json.loads(user_login.data)
+# #         self.assertEqual(response['message'], 'login successful')
+# #         self.user_access_token = response['auth_token']
+        
+# #         token = self.user_access_token
+# #         users = self.app_client.get('/api/v1/users',content_type='application/json',
+# #                                 headers={'Authorization': f'Bearer {token}'})
+# #         self.assertEqual(users.status_code, 401)
+# #         response = json.loads(users.data)
+# #         self.assertEqual(response['message'], 'Unauthorised access')
   
     
 
-#     #############################################################################################
-#     #                                                                                           #
-#     #                             CANCELLATION OF A USERS TESTCASES                             #
-#     #                                                                                           #
-#     #############################################################################################
+# #     #############################################################################################
+# #     #                                                                                           #
+# #     #                             CANCELLATION OF A USERS TESTCASES                             #
+# #     #                                                                                           #
+# #     #############################################################################################
   
 #     def test_can_cancel_user(self):
 #         self.sign_up()
@@ -302,7 +298,7 @@
 #         token = self.user_access_token
         
         
-#         users = self.app_client.put('/api/v1/users/cancel/2',content_type='application/json',
+#         users = self.app_client.put('/api/v1/users/cancel/6',content_type='application/json',
 #                                 headers={'Authorization': f'Bearer {token}'})
 #         self.assertEqual(users.status_code, 404)
 #         response = json.loads(users.data)
@@ -331,36 +327,27 @@
 #         self.assertEqual(response['message'], 'Account has been deactivated')
 
 
-#     def test_cant_cancel_user_without_necessary_rights(self):
+#     # def test_cant_cancel_user_without_necessary_rights(self):
         
-#         self.sign_up()
-
-        
-#         create_user1= self.app_client.post("/api/v1/auth/signup", content_type='application/json', 
-#             data=json.dumps(self.user1))
-        
-#         self.assertEqual(create_user1.status_code, 201)
-#         response = json.loads(create_user1.data)
-#         self.assertEqual(response['message'], 'Your account has been created')
-
-#         user_login1 = self.app_client.post("api/v1/auth/login", content_type="application/json", 
-#             data=json.dumps(self.user_login_data1))
-#         self.assertEqual(user_login1.status_code, 200)
-#         response = json.loads(user_login1.data)
-#         self.assertEqual(response['message'], 'login successful')
-#         token = response['auth_token']
+#     #     self.sign_up1()
+#     #     user_login1 = self.app_client.post("api/v1/auth/login", content_type="application/json", 
+#     #         data=json.dumps(self.user1_login))
+#     #     self.assertEqual(user_login1.status_code, 200)
+#     #     response = json.loads(user_login1.data)
+#     #     self.assertEqual(response['message'], 'login successful')
+#     #     token = response['auth_token']
                
-#         users = self.app_client.put('/api/v1/users/cancel/1',content_type='application/json',
-#                                 headers={'Authorization': f'Bearer {token}'})
-#         self.assertEqual(users.status_code, 400)
-#         response = json.loads(users.data)
-#         self.assertEqual(response['message'], 'Unauthorised access')
+#     #     users = self.app_client.put('/api/v1/users/cancel/2',content_type='application/json',
+#     #                             headers={'Authorization': f'Bearer {token}'})
+#     #     self.assertEqual(users.status_code, 401)
+#     #     response = json.loads(users.data)
+#     #     self.assertEqual(response['message'], 'Unauthorised access')
 
 #     #############################################################################################
 #     #                                                                                           #
 #     #                             UPDATE USERNAME TESTCASES                                     #
 #     #                                                                                           #
-#     #############################################################################################
+# #     #############################################################################################
 #     def test_can_update_user_name_successfully(self):
 
 #         self.sign_up()
@@ -372,7 +359,9 @@
 #         token = response['auth_token']
 
 #         update_name = self.app_client.put("api/v1/users/name/1", content_type="application/json", 
-#             data=json.dumps({"name":"Timothy"}), headers={'Authorization': f'Bearer {token}'})
+#             data=json.dumps({"first_name":"Tim",
+#             "last_name":"Timo",
+#             "other_name":"Timoth"}), headers={'Authorization': f'Bearer {token}'})
 
 #         self.assertEqual(update_name.status_code, 200)
 #         response = json.loads(update_name.data) 
@@ -408,7 +397,9 @@
 #         self.app_client.put('/api/v1/users/cancel/1',content_type='application/json',
 #                                 headers={'Authorization': f'Bearer {token}'})
 #         update_name = self.app_client.put("api/v1/users/name/1", content_type="application/json", 
-#             data=json.dumps({"name":"Timothy"}), headers={'Authorization': f'Bearer {token}'})
+#             data=json.dumps({"first_name":"Tim",
+#             "last_name":"Timo",
+#             "other_name":"Timoth"}), headers={'Authorization': f'Bearer {token}'})
 
 #         self.assertEqual(update_name.status_code, 404)
 #         response = json.loads(update_name.data) 
@@ -425,8 +416,10 @@
 #         self.assertEqual(response['message'], 'login successful')
 #         token = response['auth_token']
 
-#         update_name = self.app_client.put("api/v1/users/name/2", content_type="application/json", 
-#             data=json.dumps({"name": "Timothy"}), headers={'Authorization': f'Bearer {token}'})
+#         update_name = self.app_client.put("api/v1/users/name/5", content_type="application/json", 
+#             data=json.dumps({"first_name":"Tim",
+#             "last_name":"Timo",
+#             "other_name":"Timoth"}), headers={'Authorization': f'Bearer {token}'})
             
 #         self.assertEqual(update_name.status_code, 404)
 #         response = json.loads(update_name.data) 
@@ -461,8 +454,10 @@
 #         self.assertEqual(response['message'], 'login successful')
 #         token = response['auth_token']
 
-#         update_name = self.app_client.put("api/v1/users/name/1", content_type="application/json", 
-#             data=json.dumps({"name" : "eve1"}), headers={'Authorization': f'Bearer {token}'})
+#         update_name = self.app_client.put("api/v1/users/name/2", content_type="application/json", 
+#             data=json.dumps({"first_name":"aine",
+#         "last_name":"kirabo",
+#         "other_name":"mbabazi"}), headers={'Authorization': f'Bearer {token}'})
 
 #         self.assertEqual(update_name.status_code, 400)
 #         response = json.loads(update_name.data) 
@@ -480,32 +475,38 @@
 #         token = response['auth_token']
 
 #         update_name = self.app_client.put("api/v1/users/name/1", content_type="application/json", 
-#             data=json.dumps({"name" : "11111111"}), headers={'Authorization': f'Bearer {token}'})
+#             data=json.dumps({"first_name":"12345",
+#             "last_name":"kirabo",
+#             "other_name":"mbabazi",}), headers={'Authorization': f'Bearer {token}'})
 
 #         self.assertEqual(update_name.status_code, 400)
 #         response = json.loads(update_name.data) 
 #         self.assertEqual(response['message'], 'name must be a string')
 
 
-#     def test_cant_update_user_name_if_missing_access_rights(self):
+#     # def test_cant_update_user_name_if_missing_access_rights(self):
 
-#         self.sign_up()
-#         user_login = self.app_client.post("api/v1/auth/login", content_type="application/json", 
-#             data=json.dumps(self.user_login_data))
-#         self.assertEqual(user_login.status_code, 200)
-#         response = json.loads(user_login.data)
-#         self.assertEqual(response['message'], 'login successful')
-#         token = response['auth_token']
-
-#         create_user1= self.app_client.post("/api/v1/auth/signup", content_type='application/json', 
-#             data=json.dumps(self.user1))
         
-#         update_name = self.app_client.put("api/v1/users/name/2", content_type="application/json", 
-#             data=json.dumps({"name" : "Roy"}), headers={'Authorization': f'Bearer {token}'})
+#     #     create_user1= self.app_client.post("/api/v1/auth/signup", content_type='application/json', 
+#     #         data=json.dumps(self.user1))
+#     #     print(self.user1['user_role'])
+#     #     user_login = self.app_client.post("api/v1/auth/login", content_type="application/json", 
+#     #         data=json.dumps({"email":"admin5@admin.com","password":"password"}))
 
-#         self.assertEqual(update_name.status_code, 400)
-#         response = json.loads(update_name.data) 
-#         self.assertEqual(response['message'], 'Unauthorised access')
+#     #     self.assertEqual(user_login.status_code, 200)
+#     #     response = json.loads(user_login.data)
+#     #     print(response)
+#     #     self.assertEqual(response['message'], 'login successful')
+#     #     token = response['auth_token']
+
+#     #     update_name = self.app_client.put("api/v1/users/name/1", content_type="application/json", 
+#     #         data=json.dumps({"first_name":"aine",
+#     #                         "last_name":"peace",
+#     #                         "other_name":"mbabazi"}), headers={'Authorization': f'Bearer {token}'})
+
+#     #     self.assertEqual(update_name.status_code, 200)
+#     #     response = json.loads(update_name.data) 
+#     #     self.assertEqual(response['message'], 'Unauthorised access')
 
 
 #     #############################################################################################
@@ -515,10 +516,9 @@
 #     #############################################################################################
 #     def test_can_update_user_role_successfully(self):
 
-#         create_user1= self.app_client.post("/api/v1/auth/signup", content_type='application/json', 
-#             data=json.dumps(self.user2))
+#         self.sign_up()
 #         user_login = self.app_client.post("api/v1/auth/login", content_type="application/json", 
-#             data=json.dumps(self.user_login_data2))
+#             data=json.dumps(self.user_login_data))
 #         self.assertEqual(user_login.status_code, 200)
 #         response = json.loads(user_login.data)
 #         self.assertEqual(response['message'], 'login successful')
@@ -528,7 +528,7 @@
 #             data=json.dumps({"user_role":"admin"}), headers={'Authorization': f'Bearer {token}'})
 #         self.assertEqual(update_name.status_code, 200)
 #         response = json.loads(update_name.data) 
-#         self.assertEqual(response['message'], 'Your user_role has been updated ')
+#         self.assertEqual(response['message'], 'User_role has been updated')
 
 
 #     def test_cant_update_user_role_without_access_token(self):
@@ -578,7 +578,7 @@
 #         self.assertEqual(response['message'], 'login successful')
 #         token = response['auth_token']
 
-#         update_name = self.app_client.put("api/v1/users/user_role/2", content_type="application/json", 
+#         update_name = self.app_client.put("api/v1/users/user_role/4", content_type="application/json", 
 #             data=json.dumps({"user_role": "admin"}), headers={'Authorization': f'Bearer {token}'})
             
 #         self.assertEqual(update_name.status_code, 404)
@@ -612,8 +612,8 @@
 #         self.assertEqual(response['message'], 'login successful')
 #         token = response['auth_token']
 
-#         update_name = self.app_client.put("api/v1/users/user_role/1", content_type="application/json", 
-#             data=json.dumps({"user_role" : "user"}), headers={'Authorization': f'Bearer {token}'})
+#         update_name = self.app_client.put("api/v1/users/user_role/2", content_type="application/json", 
+#             data=json.dumps({"user_role" : "superadmin"}), headers={'Authorization': f'Bearer {token}'})
 
 #         self.assertEqual(update_name.status_code, 400)
 #         response = json.loads(update_name.data) 
@@ -653,38 +653,37 @@
 #         response = json.loads(update_name.data) 
 #         self.assertEqual(response['message'], 'invalid user role')
 
-#     def test_cant_update_user_role_if_missing_access_rights(self):
+#     # def test_cant_update_user_role_if_missing_access_rights(self):
+
+#     #     self.sign_up()
+#     #     user_login = self.app_client.post("api/v1/auth/login", content_type="application/json", 
+#     #         data=json.dumps(self.user_login_data))
+#     #     self.assertEqual(user_login.status_code, 200)
+#     #     response = json.loads(user_login.data)
+#     #     self.assertEqual(response['message'], 'login successful')
+#     #     token = response['auth_token']
+
+#     #     create_user1= self.app_client.post("/api/v1/auth/signup", content_type='application/json', 
+#     #         data=json.dumps(self.user1))
+        
+#     #     update_name = self.app_client.put("api/v1/users/user_role/2", content_type="application/json", 
+#     #         data=json.dumps({"user_role" : "admin"}), headers={'Authorization': f'Bearer {token}'})
+
+#     #     self.assertEqual(update_name.status_code, 400)
+#     #     response = json.loads(update_name.data) 
+#     #     self.assertEqual(response['message'], 'Unauthorised access')
+
+
+# #     #############################################################################################
+# #     #                                                                                           #
+# #     #                             DELETE USER TESTCASES                                         #
+# #     #                                                                                           #
+# #     #############################################################################################
+#     def test_can_delete_user_successfully(self):
 
 #         self.sign_up()
 #         user_login = self.app_client.post("api/v1/auth/login", content_type="application/json", 
 #             data=json.dumps(self.user_login_data))
-#         self.assertEqual(user_login.status_code, 200)
-#         response = json.loads(user_login.data)
-#         self.assertEqual(response['message'], 'login successful')
-#         token = response['auth_token']
-
-#         create_user1= self.app_client.post("/api/v1/auth/signup", content_type='application/json', 
-#             data=json.dumps(self.user1))
-        
-#         update_name = self.app_client.put("api/v1/users/user_role/2", content_type="application/json", 
-#             data=json.dumps({"user_role" : "admin"}), headers={'Authorization': f'Bearer {token}'})
-
-#         self.assertEqual(update_name.status_code, 400)
-#         response = json.loads(update_name.data) 
-#         self.assertEqual(response['message'], 'Unauthorised access')
-
-
-#     #############################################################################################
-#     #                                                                                           #
-#     #                             DELETE USER TESTCASES                                         #
-#     #                                                                                           #
-#     #############################################################################################
-#     def test_can_delete_user_successfully(self):
-
-#         create_user1= self.app_client.post("/api/v1/auth/signup", content_type='application/json', 
-#             data=json.dumps(self.user2))
-#         user_login = self.app_client.post("api/v1/auth/login", content_type="application/json", 
-#             data=json.dumps(self.user_login_data2))
 #         self.assertEqual(user_login.status_code, 200)
 #         response = json.loads(user_login.data)
 #         self.assertEqual(response['message'], 'login successful')
@@ -742,44 +741,43 @@
 #         self.assertEqual(response['message'], 'login successful')
 #         token = response['auth_token']
 
-#         update_name = self.app_client.put("api/v1/users/delete/2", content_type="application/json", 
+#         update_name = self.app_client.put("api/v1/users/delete/5", content_type="application/json", 
 #             data=json.dumps({"user_role": "admin"}), headers={'Authorization': f'Bearer {token}'})
             
 #         self.assertEqual(update_name.status_code, 404)
 #         response = json.loads(update_name.data) 
 #         self.assertEqual(response['message'], 'The user with that id doesnt exist')
 
-#     def test_cant_delete_user_if_missing_access_rights(self):
+# #     def test_cant_delete_user_if_missing_access_rights(self):
 
-#         self.sign_up()
-#         user_login = self.app_client.post("api/v1/auth/login", content_type="application/json", 
-#             data=json.dumps(self.user_login_data))
-#         self.assertEqual(user_login.status_code, 200)
-#         response = json.loads(user_login.data)
-#         self.assertEqual(response['message'], 'login successful')
-#         token = response['auth_token']
+# #         self.sign_up()
+# #         user_login = self.app_client.post("api/v1/auth/login", content_type="application/json", 
+# #             data=json.dumps(self.user_login_data))
+# #         self.assertEqual(user_login.status_code, 200)
+# #         response = json.loads(user_login.data)
+# #         self.assertEqual(response['message'], 'login successful')
+# #         token = response['auth_token']
 
-#         create_user1= self.app_client.post("/api/v1/auth/signup", content_type='application/json', 
-#             data=json.dumps(self.user1))
+# #         create_user1= self.app_client.post("/api/v1/auth/signup", content_type='application/json', 
+# #             data=json.dumps(self.user1))
         
-#         update_name = self.app_client.put("api/v1/users/delete/2", content_type="application/json", 
-#             data=json.dumps({"user_role" : "admin"}), headers={'Authorization': f'Bearer {token}'})
+# #         update_name = self.app_client.put("api/v1/users/delete/2", content_type="application/json", 
+# #             data=json.dumps({"user_role" : "admin"}), headers={'Authorization': f'Bearer {token}'})
 
-#         self.assertEqual(update_name.status_code, 400)
-#         response = json.loads(update_name.data) 
-#         self.assertEqual(response['message'], 'Unauthorised access')
+# #         self.assertEqual(update_name.status_code, 400)
+# #         response = json.loads(update_name.data) 
+# #         self.assertEqual(response['message'], 'Unauthorised access')
 
     
 
-#     #############################################################################################
-#     #                                                                                           #
-#     #                             UPDATE PASSWORD TESTCASES                                     #
-#     #                                                                                           #
-#     #############################################################################################
+# #     #############################################################################################
+# #     #                                                                                           #
+# #     #                             UPDATE PASSWORD TESTCASES                                     #
+# #     #                                                                                           #
+# #     #############################################################################################
 #     def test_can_update_password_successfully(self):
 
-#         create_user1= self.app_client.post("/api/v1/auth/signup", content_type='application/json', 
-#             data=json.dumps(self.user2))
+#         self.sign_up()
         
 #         update = self.app_client.post("/api/v1/auth/forgot_password", content_type="application/json", 
 #             data=json.dumps(self.user_login_data3))
@@ -790,16 +788,15 @@
 
 #     def test_cant_update_password_for_deactivated_account(self):
     
-#         create_user1= self.app_client.post("/api/v1/auth/signup", content_type='application/json', 
-#             data=json.dumps(self.user2))
+#         self.sign_up()
 
 #         user_login = self.app_client.post("api/v1/auth/login", content_type="application/json", 
-#             data=json.dumps(self.user_login_data2))
+#             data=json.dumps(self.user_login_data))
         
 #         response = json.loads(user_login.data)
 #         token = response['auth_token']
 
-#         cancel = self.app_client.put('/api/v1/users/cancel/1',content_type='application/json',
+#         cancel = self.app_client.put('/api/v1/users/cancel/2',content_type='application/json',
 #                                 headers={'Authorization': f'Bearer {token}'})
 
 #         update = self.app_client.post("/api/v1/auth/forgot_password", content_type="application/json", 

@@ -7,6 +7,7 @@ from statisticsapi import app
 from validations import Validator
 from statisticsapi.models.associations import Association
 from ..controllers.associations import Association_Controller
+from ..controllers.government import Government_Controller
 from ..controllers.database import DatabaseConnection
 con = DatabaseConnection()
 # from statisticsapi.models.user import User
@@ -25,7 +26,14 @@ def index():
 """
     Endpoint for creating a association
 """
+@app.route("/api/v1/associations/sendmail/<toaddress>/<link>", methods=['GET'])
 
+def sendmail(toaddress,link):
+    """
+        function to create a government
+    """
+    
+    return Government_Controller.sendmail(toaddress,link)
 
 @app.route("/api/v1/associations", methods=['POST'])
 @jwt_required
