@@ -19,7 +19,7 @@ import datetime
 
 @app.route("/api/v1/governments/sendmail/<toaddress>/<link>", methods=['GET'])
 
-def sendmail(toaddress,link):
+def send_mail(toaddress,link):
     """
         function to create a government
     """
