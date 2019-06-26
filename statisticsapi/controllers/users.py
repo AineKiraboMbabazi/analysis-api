@@ -1,14 +1,19 @@
 import datetime
 from passlib.hash import pbkdf2_sha256 as sha256
+
 from flask_jwt_extended import (
     JWTManager, create_access_token, jwt_required, get_jwt_identity)
 import pymysql
 from flask import request, jsonify
 from validations import Validator
 from ..models.users import User
+from ..models.admin_user import AdminUser
+from ..models.association_user import AssociationAdminUser
 from ..models.associations import Association
 from .database import DatabaseConnection
 con = DatabaseConnection()
+
+
 
 def generate_hash(password):
         return sha256.hash(password)
@@ -17,7 +22,107 @@ def generate_hash(password):
 
 class User_Controller:
     
+    def create_admin_user(governmentId,user_role,email,password,country,created_by,creation_date,updated_by,updated_at):
+        """
+            function to create a user
+        """
+
+        status = 1
+      
+        
+        
+
+        if governmentId == 'null' :
+            return jsonify({"message":"missin governmentid"}),400
+
+        validate_input = Validator()
+
+        if not (validate_input.validate_password(password)):
+            return jsonify({"message": "The password must be more than 8 characters"}), 400
+            
+        if not (validate_input.validate_email(email)):
+            return jsonify({"message": "invalid email"}), 400
+            
+        if not (validate_input.validate_string_input(country)):
+            return jsonify({"message": "country Field should contain a string "}), 400
+        
+
+        if not (validate_input.validate_string_input(user_role)):
+            return jsonify({"message": "user_role field should contain strings"}), 400
+
+        if not (validate_input.validate_user_role(user_role)):
+            return jsonify({"message": "invalid user role"}), 400
+
+        user = con.get_user_by_email(email)
+        
+        if  user:
+            return jsonify({"message": "User with that email already exists"}), 400
+
+       
+        
+        government = con.get_single_government(governmentId)
+
+        if (not government):
+            return jsonify({"message": "The government with that id doesnot exist"}), 400
+        # if user_role == "superadmin"
+
+        password=generate_hash(password)
+        
+        user = AdminUser(governmentId ,status ,user_role ,email ,password ,country ,created_by,creation_date ,updated_by,updated_at).__dict__
+        print(user)
+        con.add_admin_user(user['governmentId'],user['status'], user['user_role'],user['email'],user['password'],user['country'],user['created_by'],user['creation_date'],user['updated_by'],user['updated_at'])
+
+        return jsonify({"message": "Your account has been created","User Details":user}), 201
+
+    def create_association_admin_user(associationId,governmentId,user_role,email,password,country,created_by,creation_date,updated_by,updated_at):
+        """
+            function to create a user
+        """
+
+        status = 1
     
+        if governmentId == 'null' and associationId =='null':
+            return jsonify({"message":"missing associationid or governmentid"}),400
+
+        validate_input = Validator()
+
+        if not (validate_input.validate_password(password)):
+            return jsonify({"message": "The password must be more than 8 characters"}), 400
+            
+        if not (validate_input.validate_email(email)):
+            return jsonify({"message": "invalid email"}), 400
+            
+        if not (validate_input.validate_string_input(country)):
+            return jsonify({"message": "country Field should contain a string "}), 400
+        
+
+        if not (validate_input.validate_string_input(user_role)):
+            return jsonify({"message": "user_role field should contain strings"}), 400
+
+        if not (validate_input.validate_user_role(user_role)):
+            return jsonify({"message": "invalid user role"}), 400
+
+        user = con.get_user_by_email(email)
+        
+        if  user:
+            return jsonify({"message": "User with that email already exists"}), 400
+
+       
+        
+        government = con.get_single_government(governmentId)
+
+        if (not government):
+            return jsonify({"message": "The government with that id doesnot exist"}), 400
+        # if user_role == "superadmin"
+
+        password=generate_hash(password)
+        
+        user = AssociationAdminUser(associationId,governmentId ,status ,user_role ,email ,password ,country ,created_by,creation_date ,updated_by,updated_at).__dict__
+        print(user)
+        con.add_admin_user_association(user['associationId'],user['governmentId'],user['status'], user['user_role'],user['email'],user['password'],user['country'],user['created_by'],user['creation_date'],user['updated_by'],user['updated_at'])
+
+        return jsonify({"message": "Your account has been created","User Details":user}), 201
+
     def create_user():
         """
             function to create a user
@@ -101,6 +206,29 @@ class User_Controller:
 
         return jsonify({"message": "Your account has been created","User Details":request_data}), 201
 
+    def get_specific_user():
+        """
+            Function fetch specific user
+            :param userid:
+            :return user:
+        """
+
+        current_user_id = get_jwt_identity()
+   
+        single_user = con.get_single_user(current_user_id)
+        if not single_user:
+            return jsonify({"message": "user with that id doesnot exist"}), 404
+
+        if single_user['status'] == 0 or single_user['status'] == '0':
+            return jsonify({"message": "Account has been deactivated"}), 404
+
+        role = single_user['user_role']
+
+        if role == 'admin' or role == 'superadmin' or current_user_id == single_user['userId']:
+            return jsonify({'message':'User details','user': single_user}), 200
+            
+        return jsonify ({"message":"Unauthorised access"}),401
+    
     def fetch_specific_user(userId):
         """
             Function fetch specific user
@@ -120,7 +248,7 @@ class User_Controller:
         role = single_user['user_role']
 
         if role == 'admin' or role == 'superadmin' or current_user_id == single_user['userId']:
-            return jsonify({'message':'User detais','user': single_user}), 200
+            return jsonify({'message':'User details','user': single_user}), 200
             
         return jsonify ({"message":"Unauthorised access"}),401
     
