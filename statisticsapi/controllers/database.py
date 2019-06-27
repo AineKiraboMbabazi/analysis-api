@@ -283,7 +283,7 @@ class DatabaseConnection:
             :return all governments:
         """
 
-        get_all = "SELECT * FROM statistic_government"
+        get_all = "SELECT *, governmentId as id FROM statistic_government"
         self.dict_cursor.execute(get_all)
         governments = self.dict_cursor.fetchall()
         return governments

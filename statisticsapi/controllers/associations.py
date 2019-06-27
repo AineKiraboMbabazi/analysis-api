@@ -94,16 +94,17 @@ class Association_Controller:
         
             return jsonify({
             'columns': [
+            # {
+            #   'label': 'associationId',
+            #   'field': 'associationId',
+            #   'sort': 'asc'
+            # },
+            # {
+            #   'label': 'governmentId',
+            #   'field': 'associationId',
+            #   'sort': 'asc'
+            # },
             {
-              'label': 'associationId',
-              'field': 'associationId',
-              'sort': 'asc'
-            },
-            {
-              'label': 'governmentId',
-              'field': 'associationId',
-              'sort': 'asc'
-            },{
               'label': 'name',
               'field': 'name',
               'sort': 'asc'
@@ -115,17 +116,18 @@ class Association_Controller:
               'label': 'created_by',
               'field': 'created_by',
               'sort': 'asc'
-            },
-            {
-              'label': 'updated-by',
-              'field': 'updated_by',
-              'sort': 'asc'
-            },
-            {
-              'label': 'updated-at',
-              'field': 'updated_at',
-              'sort': 'asc'
-            }],
+            }
+            # ,{
+            #   'label': 'updated-by',
+            #   'field': 'updated_by',
+            #   'sort': 'asc'
+            # },
+            # {
+            #   'label': 'updated-at',
+            #   'field': 'updated_at',
+            #   'sort': 'asc'
+            # }
+            ],
             
                 'rows' :associations
                 

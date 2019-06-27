@@ -96,29 +96,16 @@ class Government_Controller:
             return jsonify({
             'columns': [
             {
-              'label': 'governmentId',
-              'field': 'associationId',
+              'label': 'Name',
+              'field': 'table_name',
               'sort': 'asc'
             },{
-              'label': 'name',
-              'field': 'name',
-              'sort': 'asc'
-            },{
-              'label': 'photo',
+              'label': 'Flag',
               'field': 'photo',
               'sort': 'asc'
             },{
-              'label': 'created_by',
-              'field': 'created_by',
-              'sort': 'asc'
-            },
-            {
-              'label': 'updated-by',
-              'field': 'updated_by',
-              'sort': 'asc'
-            },{
-              'label': 'updated-at',
-              'field': 'updated_at',
+              'label': 'Created On',
+              'field': 'creation_date',
               'sort': 'asc'
             }],
             
