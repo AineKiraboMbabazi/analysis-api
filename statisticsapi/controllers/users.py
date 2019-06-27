@@ -28,9 +28,6 @@ class User_Controller:
         """
 
         status = 1
-      
-        
-        
 
         if governmentId == 'null' :
             return jsonify({"message":"missin governmentid"}),400
@@ -57,8 +54,6 @@ class User_Controller:
         
         if  user:
             return jsonify({"message": "User with that email already exists"}), 400
-
-       
         
         government = con.get_single_government(governmentId)
 
@@ -69,9 +64,9 @@ class User_Controller:
         password=generate_hash(password)
         
         user = AdminUser(governmentId ,status ,user_role ,email ,password ,country ,created_by,creation_date ,updated_by,updated_at).__dict__
-        print(user)
+        
         con.add_admin_user(user['governmentId'],user['status'], user['user_role'],user['email'],user['password'],user['country'],user['created_by'],user['creation_date'],user['updated_by'],user['updated_at'])
-
+        
         return jsonify({"message": "Your account has been created","User Details":user}), 201
 
     def create_association_admin_user(associationId,governmentId,user_role,email,password,country,created_by,creation_date,updated_by,updated_at):

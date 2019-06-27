@@ -463,7 +463,7 @@ class DatabaseConnection:
         update = "UPDATE statistic_user SET created_by= %s,updated_by = %s WHERE email =%s"
         val = (created_by,created_by,email)
         self.cursor.execute(update, val)
-
+        return {"msg":"i got here"}
     
     def add_user(self, first_name ,last_name ,other_name ,photo ,associationId ,governmentId ,status ,user_role ,email ,password ,country ,created_by,creation_date ,updated_by,updated_at ):
         """
