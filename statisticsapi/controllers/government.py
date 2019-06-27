@@ -15,7 +15,7 @@ con = DatabaseConnection()
 
 def generate_password():
         password = PasswordGenerator()
-        password.excludeschars = "!$%^,>+.*_-()#&~`?=<>" 
+        password.excludeschars = "!$%^,>+.*_-()#&~?<" 
         return password.generate()
 
 def sendmail(toaddr,update_url,password):
