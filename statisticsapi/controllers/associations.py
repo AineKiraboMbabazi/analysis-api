@@ -5,6 +5,8 @@ from flask_jwt_extended import (
 from flask import request, jsonify
 from validations import Validator
 from ..models.associations import Association
+from .users import User_Controller
+from .government import sendmail,generate_password
 from .database import DatabaseConnection
 con = DatabaseConnection()
 
@@ -29,7 +31,7 @@ class Association_Controller:
 
         request_data = request.get_json(force=True)
        
-        if len(request_data.keys()) != 3:
+        if len(request_data.keys()) != 6:
             return jsonify({"message": "Some fields are missing"}), 400
 
         
@@ -46,7 +48,9 @@ class Association_Controller:
             status = 'active'
 
         status = 'pending'
-
+        email = request_data['email']
+        role = request_data['user_role']
+        update_url = request_data['update_url']
         creation_date = datetime.date.today().strftime('%Y-%m-%d')
         name = request_data['name']
         photo = request_data['photo']
@@ -67,8 +71,10 @@ class Association_Controller:
         
         association = Association(name, photo, status, governmentId, created_by, creation_date, updated_by, updated_at).__dict__
 
-        con.create_association(association['name'], association['photo'], association['status'], association['governmentId'], association['created_by'], association['creation_date'], association['updated_by'], association['updated_at'])
-        
+        associationId = con.create_association(association['name'], association['photo'], association['status'], association['governmentId'], association['created_by'], association['creation_date'], association['updated_by'], association['updated_at'])
+        password = generate_password()
+        user = User_Controller.create_association_admin_user(associationId,governmentId,role,email,password,name,created_by,creation_date,updated_by,updated_at)
+        sendmail(email,update_url,password)
         return jsonify({"message": "Your association has been created","association":request_data}), 201
 
     def fetch_all_associations():

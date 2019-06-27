@@ -1,5 +1,6 @@
 import datetime
 import pymysql
+from password_generator import PasswordGenerator
 from flask_jwt_extended import (
     JWTManager, create_access_token, jwt_required, get_jwt_identity)
 from flask import request, jsonify
@@ -9,18 +10,21 @@ from .database import DatabaseConnection
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from .users import User_Controller
 con = DatabaseConnection()
 
+def generate_password():
+        password = PasswordGenerator()
+        password.excludeschars = "!$%^,>+.*_-()#&~`?=<>" 
+        return password.generate()
 
-class Government_Controller:
-
-    def sendmail(toaddr,signup_url):
+def sendmail(toaddr,update_url,password):
         fromaddr = "weatherstationsecure@gmail.com"
         msg = MIMEMultipart()
         msg['From'] = fromaddr
         msg['To'] = toaddr
         msg['Subject'] = "Administrator account creation"
-        body = "Follow the link below to complete account creation \n"+signup_url
+        body ="Your password is" +password+ "Follow the link below to update your user credentials \n"+update_url
         msg.attach(MIMEText(body, 'plain'))
         server = smtplib.SMTP('smtp.gmail.com', 587)
         server.ehlo()
@@ -30,6 +34,8 @@ class Government_Controller:
         server.sendmail(fromaddr, toaddr, text)
         server.quit()
         return jsonify({"message":"email notification has been sent"}),200
+
+class Government_Controller:
 
     def create_government():
         """
@@ -42,7 +48,7 @@ class Government_Controller:
 
         request_data = request.get_json(force=True)
 
-        if len(request_data.keys()) != 2:
+        if len(request_data.keys()) != 5:
             return jsonify({"message": "Some fields are missing"}), 400
 
         
@@ -50,13 +56,16 @@ class Government_Controller:
         
         if user['status'] == 0 or user['status'] == '0':
             return jsonify({"message": "User account has been deactivated"}), 400
-       
-        role = user['user_role']
+        
+        email = request_data['email']
+        role = request_data['user_role']
+        update_url = request_data['update_url']
         creation_date = datetime.date.today().strftime('%Y-%m-%d')
         updated_at = datetime.date.today().strftime('%Y-%m-%d')
         name = request_data['name']
         status = 'active'
         photo = request_data['photo']
+        
         created_by= current_user
         updated_by = current_user
         validate_input = Validator()
@@ -71,7 +80,10 @@ class Government_Controller:
         
         government = Government(name, photo, status, created_by, creation_date, updated_by, updated_at).__dict__
 
-        con.create_government(government['name'], government['photo'], government['status'], government['created_by'], government['creation_date'], government['updated_by'], government['updated_at'])
+        governmentId = con.create_government(government['name'], government['photo'], government['status'], government['created_by'], government['creation_date'], government['updated_by'], government['updated_at'])
+        password = generate_password()
+        user = User_Controller.create_admin_user(governmentId,role,email,password,name,created_by,creation_date,updated_by,updated_at)
+        sendmail(email,update_url,password)
         
         return jsonify({"message": "Your government has been created", "government":request_data}), 201
 

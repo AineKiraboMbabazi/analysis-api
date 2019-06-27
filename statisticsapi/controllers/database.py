@@ -60,7 +60,6 @@ class DatabaseConnection:
         update = "UPDATE statistic_user SET created_by= %s,updated_by = %s WHERE email ='admin3@admin.com'"
         val = (created_by,created_by)
         self.cursor.execute(update, val)
-
         create_associations_table = 'CREATE TABLE IF NOT EXISTS statistic_association(associationId INT NOT NULL AUTO_INCREMENT PRIMARY KEY,name VARCHAR(50),photo VARCHAR(150),status VARCHAR(20),governmentId INT,created_by INT,creation_date TIMESTAMP,updated_by INT,updated_at DATETIME)'
 
         create_government_table = 'CREATE TABLE IF NOT EXISTS statistic_government(governmentId INT NOT NULL AUTO_INCREMENT PRIMARY KEY,name VARCHAR(50),photo VARCHAR(150),status VARCHAR(20),created_by INT,creation_date TIMESTAMP,updated_by INT,updated_at DATETIME)'
@@ -110,8 +109,10 @@ class DatabaseConnection:
         add_association = "INSERT INTO statistic_association (name, photo, status, governmentId, created_by, creation_date, updated_by, updated_at ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)"
         val =(name, photo, status, governmentId, created_by, creation_date, updated_by, updated_at)
         self.cursor.execute(add_association, val)
+        id = "SELECT LAST_INSERT_ID()"
+        id = self.cursor.execute(id)
+        return id
         
-
     def get_all_associations(self):
         """
             Function to fetch all associations
@@ -274,7 +275,9 @@ class DatabaseConnection:
         add_government = "INSERT INTO statistic_government (name, photo, status, created_by, creation_date, updated_by, updated_at ) VALUES (%s,%s,%s,%s,%s,%s,%s)"
         val =(name, photo, status,  created_by, creation_date, updated_by, updated_at)
         self.cursor.execute(add_government, val)
-        
+        government_id = "SELECT LAST_INSERT_ID()"
+        result = self.dict_cursor.execute(government_id)
+        return result
 
     def get_all_governments(self):
         """
@@ -407,7 +410,61 @@ class DatabaseConnection:
     #                              functions for the users model                                    #
     #                                                                                               #
     ################################################################################################
+    def add_admin_user_association(self ,associationId,governmentId ,status ,user_role ,email ,password ,country ,created_by,creation_date ,updated_by,updated_at ):
+        """
+            Function to add a user
 
+            :param governmentId:
+            :param name:
+            :param status:
+            :param user_role :
+            :param email:
+            :param password:
+            :param country :
+            :param created_by:
+            :param creation_date:
+            :param updated_by:
+            :param updated_at:
+        """
+
+        add_users = "INSERT INTO statistic_user ( associationId,governmentId ,status ,user_role ,email ,password ,country ,created_by,creation_date ,updated_by,updated_at) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+        val =( associationId,governmentId ,status ,user_role ,email ,password ,country ,created_by,creation_date ,updated_by,updated_at)
+        self.cursor.execute(add_users, val)
+        get_user_id = "SELECT userId FROM statistic_user WHERE email=%s "
+        val =  (email)
+        created_by = self.cursor.fetchone()
+        update = "UPDATE statistic_user SET created_by= %s,updated_by = %s WHERE email =%s"
+        val = (created_by,created_by,email)
+        self.cursor.execute(update, val)
+
+    def add_admin_user(self ,governmentId ,status ,user_role ,email ,password ,country ,created_by,creation_date ,updated_by,updated_at ):
+        """
+            Function to add a user
+
+            :param governmentId:
+            :param name:
+            :param status:
+            :param user_role :
+            :param email:
+            :param password:
+            :param country :
+            :param created_by:
+            :param creation_date:
+            :param updated_by:
+            :param updated_at:
+        """
+
+        add_users = "INSERT INTO statistic_user ( governmentId ,status ,user_role ,email ,password ,country ,created_by,creation_date ,updated_by,updated_at) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+        val =( governmentId ,status ,user_role ,email ,password ,country ,created_by,creation_date ,updated_by,updated_at)
+        self.cursor.execute(add_users, val)
+        get_user_id = "SELECT userId FROM statistic_user WHERE email=%s "
+        val =  (email)
+        created_by = self.cursor.fetchone()
+        update = "UPDATE statistic_user SET created_by= %s,updated_by = %s WHERE email =%s"
+        val = (created_by,created_by,email)
+        self.cursor.execute(update, val)
+
+    
     def add_user(self, first_name ,last_name ,other_name ,photo ,associationId ,governmentId ,status ,user_role ,email ,password ,country ,created_by,creation_date ,updated_by,updated_at ):
         """
             Function to add a user
