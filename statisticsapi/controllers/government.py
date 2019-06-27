@@ -10,12 +10,12 @@ from .database import DatabaseConnection
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from .users import User_Controller
+from .users import User_Controller,generate_hash
 con = DatabaseConnection()
 
 def generate_password():
         password = PasswordGenerator()
-        password.excludeschars = "!$%^,>+.*_-()#&~?<" 
+        password.excludeschars = "!$%^,>+.*_-()#&~`?=" 
         return password.generate()
 
 def sendmail(toaddr,update_url,password):
@@ -24,7 +24,7 @@ def sendmail(toaddr,update_url,password):
         msg['From'] = fromaddr
         msg['To'] = toaddr
         msg['Subject'] = "Administrator account creation"
-        body ="Your password is" +password+ "Follow the link below to update your user credentials \n"+update_url
+        body ="Your password is " + password + ". Follow the link below to update your user credentials \n"+update_url
         msg.attach(MIMEText(body, 'plain'))
         server = smtplib.SMTP('smtp.gmail.com', 587)
         server.ehlo()
@@ -45,7 +45,7 @@ class Government_Controller:
         """
 
         current_user = get_jwt_identity()
-
+        
         request_data = request.get_json(force=True)
 
         if len(request_data.keys()) != 5:
@@ -58,11 +58,11 @@ class Government_Controller:
             return jsonify({"message": "User account has been deactivated"}), 400
         
         email = request_data['email']
-        role = request_data['user_role']
+        user_role = request_data['user_role']
         update_url = request_data['update_url']
         creation_date = datetime.date.today().strftime('%Y-%m-%d')
         updated_at = datetime.date.today().strftime('%Y-%m-%d')
-        name = request_data['name']
+        country = request_data['name']
         status = 'active'
         photo = request_data['photo']
         
@@ -70,20 +70,26 @@ class Government_Controller:
         updated_by = current_user
         validate_input = Validator()
 
-        if not (validate_input.validate_string_input(name)):
+        if not (validate_input.validate_string_input(country)):
             return jsonify({"message": "Name field should contain strings "}), 400
                             
-        government=con.fetch_governments_by_name(name)
+        government=con.fetch_governments_by_name(country)
         
         if government:
             return jsonify({"message":"A government with that name already exists"}), 400
         
-        government = Government(name, photo, status, created_by, creation_date, updated_by, updated_at).__dict__
+        government = Government(country, photo, status, created_by, creation_date, updated_by, updated_at).__dict__
 
         governmentId = con.create_government(government['name'], government['photo'], government['status'], government['created_by'], government['creation_date'], government['updated_by'], government['updated_at'])
         password = generate_password()
-        user = User_Controller.create_admin_user(governmentId,role,email,password,name,created_by,creation_date,updated_by,updated_at)
+        print(password)
         sendmail(email,update_url,password)
+        password = generate_hash(password)
+        print(' --- ')
+        print(password)
+        user = User_Controller.create_admin_user(governmentId,user_role,email,password,country,created_by,creation_date,updated_by,updated_at)
+        
+        
         
         return jsonify({"message": "Your government has been created", "government":request_data}), 201
 
