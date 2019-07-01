@@ -3,7 +3,7 @@ import os
 import datetime
 from passlib.hash import pbkdf2_sha256 as sha256
 from flask_jwt_extended import (
-    JWTManager, create_access_token, jwt_required, get_jwt_identity)
+    JWTManager, create_access_token, jwt_required,decode_token, get_jwt_identity)
 from flask import request, jsonify
 from statisticsapi.models.users import User
 from statisticsapi.controllers.users import User_Controller
@@ -15,6 +15,9 @@ from statisticsapi.controllers.database import DatabaseConnection
 
 def verify_hash(password, hash):
     return sha256.verify(password, hash)
+
+def decode_jwt_token(authorization_token):
+        return(decode_token(authorization_token,app.config.get('SECRET_KEY'))['identity'])
 
 class Auth():
 
@@ -41,7 +44,7 @@ class Auth():
         
         login_validation = Validator()
         if not login_validation.validate_email(email):
-            return jsonify({"message": "You entered an invalid email or theemail is missing"}), 401
+            return jsonify({"message": "You entered an invalid email or the email is missing"}), 401
 
         if not login_validation.validate_password(password):
             return jsonify({"message": "You entered an invalid password,password should be atleast 8 characters long"}), 401
@@ -54,6 +57,7 @@ class Auth():
             return jsonify ({"message":"user is not availabe"}),404
         
         verified_hash=verify_hash(password, check_user['password'])
+        
         if not verified_hash:
             return jsonify({"message":"The password you have entered is incorrect"}),401
         
@@ -62,9 +66,16 @@ class Auth():
         
         auth_token = create_access_token(identity=check_user['userId'],
                                         expires_delta=expires)
+
         return jsonify({
+            'first_name':check_user['first_name'],
+            'last_name':check_user['last_name'],
+            'other_name':check_user['other_name'],
+            'role':check_user['user_role'],
+            'id':check_user['userId'],
             'message': 'login successful',
-            'auth_token': auth_token}), 200
+            'auth_token': auth_token
+            }), 200
 
     def recover_password():
         """

@@ -33,7 +33,7 @@ class Validator:
 
         def validate_user_role(self, text):
                 text = text.lower()
-                groups = ['admin', 'superadmin','user']
+                groups = ['admin', 'superadmin','user','super_government_admin','super_association_admin']
                 
                 if text not in groups:
                         return False

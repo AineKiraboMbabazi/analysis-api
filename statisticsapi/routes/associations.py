@@ -7,6 +7,7 @@ from statisticsapi import app
 from validations import Validator
 from statisticsapi.models.associations import Association
 from ..controllers.associations import Association_Controller
+from ..controllers.government import Government_Controller
 from ..controllers.database import DatabaseConnection
 con = DatabaseConnection()
 # from statisticsapi.models.user import User
@@ -25,7 +26,14 @@ def index():
 """
     Endpoint for creating a association
 """
+@app.route("/api/v1/associations/sendmail/<toaddress>/<link>", methods=['GET'])
 
+def sendmail(toaddress,link):
+    """
+        function to create a government
+    """
+    
+    return Government_Controller.sendmail(toaddress,link)
 
 @app.route("/api/v1/associations", methods=['POST'])
 @jwt_required
@@ -94,14 +102,14 @@ def cancel_specific_association(associationId):
     
     return Association_Controller.cancel_specific_association(associationId)
 
-# @app.route("/api/v1/associations/update_location/<int:associationId>", methods=['PUT'])
-# @jwt_required
-# def update_location(associationId):
-#     """
-#         Function to update location
-#         :return success message:
-#     """
-#     return Association_Controller.update_location(associationId)
+@app.route("/api/v1/associations/photo/<int:associationId>", methods=['PUT'])
+@jwt_required
+def update_photo(associationId):
+    """
+        Function to update location
+        :return success message:
+    """
+    return Association_Controller.update_photo(associationId)
 
 
 @app.route("/api/v1/associations/name/<int:associationId>", methods=['PUT'])

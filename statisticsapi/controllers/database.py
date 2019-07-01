@@ -31,7 +31,7 @@ class DatabaseConnection:
             self.con_parameter = dict(
                 database=db,
                 user="root",
-                password="",
+                password="Root1#@",
                 host="localhost"
             )
             self.con = pymysql.connect(**self.con_parameter)
@@ -47,15 +47,22 @@ class DatabaseConnection:
         """
             Create users table
         """
-        create_users_table = 'CREATE TABLE  IF NOT EXISTS statistic_user (userId INT NOT NULL AUTO_INCREMENT PRIMARY KEY,name VARCHAR(50),associationId VARCHAR(10),governmentId VARCHAR(10),user_group VARCHAR(20),status VARCHAR(20),user_role VARCHAR(20),email VARCHAR(50),password VARCHAR(200),country VARCHAR(100),created_by VARCHAR(50),creation_date TIMESTAMP )'
+        create_users_table = 'CREATE TABLE  IF NOT EXISTS statistic_user (userId INT NOT NULL AUTO_INCREMENT PRIMARY KEY,first_name VARCHAR(50),last_name VARCHAR(50),other_name VARCHAR(50),photo VARCHAR(150),associationId VARCHAR(10),governmentId VARCHAR(10),status VARCHAR(20),user_role VARCHAR(20),email VARCHAR(50),password VARCHAR(200),country VARCHAR(100),created_by VARCHAR(50),creation_date TIMESTAMP,updated_by INT,updated_at DATETIME )'
                 
         # ,CONSTRAINT assoc_id FOREIGN KEY fk_association_id(associationId) REFERENCES statistic_association (associationId) ON UPDATE CASCADE
             
+        add_users = "INSERT INTO statistic_user ( first_name ,last_name ,other_name ,photo ,associationId ,governmentId ,status ,user_role ,email ,password ,country ,created_by,creation_date ,updated_by,updated_at) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+        val =( "Aine" ,"Kirabo" ,"Mbabazi" ,"photo" ,"1" ,"1" ,1 ,"superadmin" ,"admin3@admin.com" ,"$pbkdf2-sha256$29000$qRUCQEjpHSPkfE8p5RwjRA$oA0e.2qrdn1J7HM9qSW7.tyvAVWQlqKdJlsut7vsQ8w" ,"Uganda" ,1,"2019-08-09" ,1,"2019-08-09")
+        self.cursor.execute(add_users, val)
+        get_user_id = "SELECT userId FROM statistic_user WHERE email='admin3@admin.com'"
         
+        created_by = self.cursor.fetchone()
+        update = "UPDATE statistic_user SET created_by= %s,updated_by = %s WHERE email ='admin3@admin.com'"
+        val = (created_by,created_by)
+        self.cursor.execute(update, val)
+        create_associations_table = 'CREATE TABLE IF NOT EXISTS statistic_association(associationId INT NOT NULL AUTO_INCREMENT PRIMARY KEY,name VARCHAR(50),photo VARCHAR(150),status VARCHAR(20),governmentId INT,created_by INT,creation_date TIMESTAMP,updated_by INT,updated_at DATETIME)'
 
-        create_associations_table = 'CREATE TABLE IF NOT EXISTS statistic_association(associationId INT NOT NULL AUTO_INCREMENT PRIMARY KEY,userId VARCHAR(20),status VARCHAR(20),creation_date TIMESTAMP,name VARCHAR(50),Location VARCHAR(100),created_by VARCHAR(50))'
-
-        create_government_table = 'CREATE TABLE IF NOT EXISTS statistic_government(governmentId INT NOT NULL AUTO_INCREMENT PRIMARY KEY,userId VARCHAR(10),associationId VARCHAR(10),status VARCHAR(20),creation_date TIMESTAMP,name VARCHAR(50),Location VARCHAR(100),created_by VARCHAR(50))'
+        create_government_table = 'CREATE TABLE IF NOT EXISTS statistic_government(governmentId INT NOT NULL AUTO_INCREMENT PRIMARY KEY,name VARCHAR(50),photo VARCHAR(150),status VARCHAR(20),created_by INT,creation_date TIMESTAMP,updated_by INT,updated_at DATETIME)'
                 
         # ,CONSTRAINT user_id FOREIGN KEY fk_user_id(userId) REFERENCES statistic_user(userId) ON UPDATE CASCADE
                 
@@ -86,7 +93,7 @@ class DatabaseConnection:
     #                                                                                               #
     ################################################################################################
 
-    def create_association(self, userId, name, Location, status,created_by,creation_date):
+    def create_association(self, name, photo, status, governmentId, created_by, creation_date, updated_by, updated_at):
         """
             Function to create an association
 
@@ -99,11 +106,13 @@ class DatabaseConnection:
             :param created_by:
             :return created association: 
         """
-        add_association = "INSERT INTO statistic_association (userId, name,  Location, status,created_by,creation_date ) VALUES (%s,%s,%s,%s,%s,%s)"
-        val =(userId, name,  Location, status,created_by,creation_date)
+        add_association = "INSERT INTO statistic_association (name, photo, status, governmentId, created_by, creation_date, updated_by, updated_at ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)"
+        val =(name, photo, status, governmentId, created_by, creation_date, updated_by, updated_at)
         self.cursor.execute(add_association, val)
+        id = "SELECT LAST_INSERT_ID()"
+        id = self.cursor.execute(id)
+        return id
         
-
     def get_all_associations(self):
         """
             Function to fetch all associations
@@ -163,19 +172,21 @@ class DatabaseConnection:
         delete_query = "UPDATE  statistic_association SET status=%s WHERE associationId=%s"
         self.cursor.execute(delete_query, (0, associationId))
 
-    def update_location(self, associationId, newlocation):
+    def update_photo(self, newphoto, updated_by,updated_at,associationId ):
         """
             Function to update_location
 
             :param associationId:
-            :param newlocation:
+            :param newphoto:
+            :param updated_at:
+            :param updated_by:
             :return updated object:
         """
 
-        update_query = " UPDATE statistic_association SET Location=%s WHERE associationId=%s"
-        self.cursor.execute(update_query, (newlocation, associationId))
+        update_query = " UPDATE statistic_association SET photo=%s,updated_by=%s, updated_at=%s WHERE associationId=%s"
+        self.cursor.execute(update_query, (newphoto, updated_by,updated_at,associationId ))
 
-    def update_association_name(self, associationId, name):
+    def update_association_name(self, name, updated_by,updated_at,associationId ):
         """
             Function to update_association name
 
@@ -184,11 +195,11 @@ class DatabaseConnection:
             :return succeful update message:
         """
 
-        update_query = """ UPDATE statistic_association SET name=%s WHERE associationId=%s"""
-        self.cursor.execute(update_query, (name,associationId))
+        update_query = """ UPDATE statistic_association SET name=%s,updated_by=%s, updated_at=%s WHERE associationId=%s"""
+        self.cursor.execute(update_query, (name, updated_by,updated_at,associationId))
 
         
-    def fetch_associations_by_user(self, userId):
+    def fetch_associations_by_user(self, created_by):
         """
             Function to fetch all associations by a user
 
@@ -196,12 +207,12 @@ class DatabaseConnection:
             :return association:
         """
 
-        fetch = "SELECT * FROM statistic_association WHERE userId=%s"
-        self.dict_cursor.execute(fetch, (userId,))
+        fetch = "SELECT * FROM statistic_association WHERE created_by=%s"
+        self.dict_cursor.execute(fetch, (created_by,))
         associations = self.dict_cursor.fetchall()
         return associations
 
-    def fetch_associations_in_country(self, Location):
+    def fetch_associations_in_country(self, governmentId):
         """
             Function to fetch all associations in country
 
@@ -209,8 +220,8 @@ class DatabaseConnection:
             :return associations in country:
         """
 
-        fetch = "SELECT * FROM statistic_association WHERE Location=%s"
-        self.dict_cursor.execute(fetch, (Location,))
+        fetch = "SELECT * FROM statistic_association WHERE governmentId=%s"
+        self.dict_cursor.execute(fetch, (governmentId,))
         associations = self.dict_cursor.fetchall()
         return associations
 
@@ -248,7 +259,7 @@ class DatabaseConnection:
     ################################################################################################
 
 
-    def create_government(self, userId, name, Location, status,created_by,creation_date):
+    def create_government(self, name, photo, status, created_by, creation_date, updated_by, updated_at):
         """
             Function to create an government
 
@@ -261,10 +272,12 @@ class DatabaseConnection:
             :param created_by:
             :return created government: 
         """
-        add_government = "INSERT INTO statistic_government (userId, name,  Location, status,created_by,creation_date ) VALUES (%s,%s,%s,%s,%s,%s)"
-        val =(userId, name,  Location, status,created_by,creation_date)
+        add_government = "INSERT INTO statistic_government (name, photo, status, created_by, creation_date, updated_by, updated_at ) VALUES (%s,%s,%s,%s,%s,%s,%s)"
+        val =(name, photo, status,  created_by, creation_date, updated_by, updated_at)
         self.cursor.execute(add_government, val)
-        
+        government_id = "SELECT LAST_INSERT_ID()"
+        result = self.dict_cursor.execute(government_id)
+        return result
 
     def get_all_governments(self):
         """
@@ -273,7 +286,7 @@ class DatabaseConnection:
             :return all governments:
         """
 
-        get_all = "SELECT * FROM statistic_government"
+        get_all = "SELECT *, governmentId as id FROM statistic_government"
         self.dict_cursor.execute(get_all)
         governments = self.dict_cursor.fetchall()
         return governments
@@ -325,19 +338,22 @@ class DatabaseConnection:
         delete_query = "UPDATE  statistic_government SET status=%s WHERE governmentId=%s"
         self.cursor.execute(delete_query, (0, governmentId))
 
-    def update_location(self, governmentId, newlocation):
+    def update_govt_photo(self, newphoto, updated_by,updated_at,governmentId ):
         """
-            Function to update_location
+            Function to update_photo
 
             :param governmentId:
-            :param newlocation:
+            :param newphoto:
+            :param updated_at:
+            :param updated_by:
             :return updated object:
         """
 
-        update_query = " UPDATE statistic_government SET Location=%s WHERE governmentId=%s"
-        self.cursor.execute(update_query, (newlocation, governmentId))
+        update_query = " UPDATE statistic_government SET photo=%s,updated_by=%s, updated_at=%s WHERE governmentId=%s"
+        self.cursor.execute(update_query, (newphoto, updated_by,updated_at,governmentId ))
 
-    def update_name(self, governmentId, newname):
+    
+    def update_govt_name(self, governmentId, name,updated_by,updated_at):
         """
             Function to update_government name
 
@@ -346,8 +362,8 @@ class DatabaseConnection:
             :return succeful update message:
         """
 
-        update_query = "UPDATE statistic_government SET name=%s WHERE governmentId=%s"
-        self.cursor.execute(update_query, (newname, governmentId))
+        update_query = "UPDATE statistic_government SET name=%s ,updated_by=%s, updated_at=%s WHERE governmentId=%s"
+        self.cursor.execute(update_query, (name, updated_by, updated_at, governmentId))
 
     def fetch_governments_by_name(self, name):
         """
@@ -362,19 +378,7 @@ class DatabaseConnection:
         governments = self.dict_cursor.fetchall()
         return governments
 
-    def fetch_governments_in_country(self, Location):
-        """
-            Function to fetch all governments in country
-
-            :param Location:
-            :return governments in country:
-        """
-
-        fetch = "SELECT * FROM statistic_government WHERE Location=%s"
-        self.dict_cursor.execute(fetch, (Location,))
-        governments = self.dict_cursor.fetchall()
-        return governments
-
+    
     def fetch_governments_by_name(self, name):
         """
             Function to fetch governments by name
@@ -406,28 +410,92 @@ class DatabaseConnection:
     #                              functions for the users model                                    #
     #                                                                                               #
     ################################################################################################
-
-    def add_user(self, associationId,governmentId, name, status,email,password,country, user_group,user_role,created_by,creation_date):
+    def add_admin_user_association(self ,associationId,governmentId ,status ,user_role ,email ,password ,country ,created_by,creation_date ,updated_by,updated_at ):
         """
             Function to add a user
 
+            :param governmentId:
+            :param name:
+            :param status:
+            :param user_role :
+            :param email:
+            :param password:
+            :param country :
+            :param created_by:
+            :param creation_date:
+            :param updated_by:
+            :param updated_at:
+        """
+
+        add_users = "INSERT INTO statistic_user ( associationId,governmentId ,status ,user_role ,email ,password ,country ,created_by,creation_date ,updated_by,updated_at) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+        val =( associationId,governmentId ,status ,user_role ,email ,password ,country ,created_by,creation_date ,updated_by,updated_at)
+        self.cursor.execute(add_users, val)
+        get_user_id = "SELECT userId FROM statistic_user WHERE email=%s "
+        val =  (email)
+        created_by = self.cursor.fetchone()
+        update = "UPDATE statistic_user SET created_by= %s,updated_by = %s WHERE email =%s"
+        val = (created_by,created_by,email)
+        self.cursor.execute(update, val)
+
+    def add_admin_user(self ,governmentId ,status ,user_role ,email ,password ,country ,created_by,creation_date ,updated_by,updated_at ):
+        """
+            Function to add a user
+
+            :param governmentId:
+            :param name:
+            :param status:
+            :param user_role :
+            :param email:
+            :param password:
+            :param country :
+            :param created_by:
+            :param creation_date:
+            :param updated_by:
+            :param updated_at:
+        """
+
+        add_users = "INSERT INTO statistic_user ( governmentId ,status ,user_role ,email ,password ,country ,created_by,creation_date ,updated_by,updated_at) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+        val =( governmentId ,status ,user_role ,email ,password ,country ,created_by,creation_date ,updated_by,updated_at)
+        self.cursor.execute(add_users, val)
+        get_user_id = "SELECT userId FROM statistic_user WHERE email=%s "
+        val =  (email)
+        created_by = self.cursor.fetchone()
+        update = "UPDATE statistic_user SET created_by= %s,updated_by = %s WHERE email =%s"
+        val = (created_by,created_by,email)
+        self.cursor.execute(update, val)
+        return {"msg":"i got here"}
+    
+    def add_user(self, first_name ,last_name ,other_name ,photo ,associationId ,governmentId ,status ,user_role ,email ,password ,country ,created_by,creation_date ,updated_by,updated_at ):
+        """
+            Function to add a user
+
+            :param first_name:
+            :param last_name:
+            :param other_name:
+            :param photo:
             :param associationId:
             :param governmentId:
             :param name:
             :param status:
+            :param user_role :
             :param email:
             :param password:
             :param country :
-            :param user_group :
-            :param user_role :
             :param created_by:
             :param creation_date:
+            :param updated_by:
+            :param updated_at:
         """
 
-        add_users = "INSERT INTO statistic_user ( associationId,governmentId, name, status,email,password,country, user_group,user_role,created_by,creation_date ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
-        val =( associationId,governmentId, name, status,email,password,country, user_group,user_role,created_by,creation_date)
+        add_users = "INSERT INTO statistic_user ( first_name ,last_name ,other_name ,photo ,associationId ,governmentId ,status ,user_role ,email ,password ,country ,created_by,creation_date ,updated_by,updated_at) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+        val =( first_name ,last_name ,other_name ,photo ,associationId ,governmentId ,status ,user_role ,email ,password ,country ,created_by,creation_date ,updated_by,updated_at)
         self.cursor.execute(add_users, val)
-        
+        get_user_id = "SELECT userId FROM statistic_user WHERE email=%s "
+        val =  (email)
+        created_by = self.cursor.fetchone()
+        update = "UPDATE statistic_user SET created_by= %s,updated_by = %s WHERE email =%s"
+        val = (created_by,created_by,email)
+        self.cursor.execute(update, val)
 
     def get_all_users(self):
         """
@@ -436,6 +504,16 @@ class DatabaseConnection:
 
         get_all = "SELECT * FROM statistic_user"
         self.dict_cursor.execute(get_all)
+        users = self.dict_cursor.fetchall()
+        return users
+
+    def get_all_association_users(self,associationId):
+        """
+            Function to fetch all users
+        """
+
+        get_all = "SELECT * FROM statistic_user WHERE associationId = %s"
+        self.dict_cursor.execute(get_all,associationId)
         users = self.dict_cursor.fetchall()
         return users
 
@@ -449,7 +527,34 @@ class DatabaseConnection:
         users = self.dict_cursor.fetchall()
         return users
 
+    def update_user_photo(self, newphoto, updated_by,updated_at,userId ):
+        """
+            Function to update_photo
 
+            :param userId:
+            :param newphoto:
+            :param updated_at:
+            :param updated_by:
+            :return updated object:
+        """
+
+        update_query = " UPDATE statistic_user SET photo=%s,updated_by=%s, updated_at=%s WHERE userId=%s"
+        self.cursor.execute(update_query, (newphoto, updated_by,updated_at,userId ))
+
+    def update_user_name(self, first_name, last_name, other_name, updated_by,updated_at,userId ):
+        """
+            Function to update_photo
+
+            :param userId:
+            :param newphoto:
+            :param updated_at:
+            :param updated_by:
+            :return updated object:
+        """
+
+        update_query = " UPDATE statistic_user SET first_name=%s,last_name=%s,other_name=%s,updated_by=%s, updated_at=%s WHERE userId=%s"
+        self.cursor.execute(update_query, (first_name, last_name, other_name, updated_by,updated_at,userId ))
+    
     def get_single_user(self, userId):
         """
             Function to fetch single user
@@ -491,34 +596,25 @@ class DatabaseConnection:
         reset_query = "UPDATE statistic_user SET password=%s WHERE email=%s"
         self.cursor.execute(reset_query, (newpassword,email))
 
-    def delete_user(self, userId):
+    def delete_user(self, userId, updated_by, updated_at):
         """
             Function to delete user
             :param userId:
         """
 
-        delete_query = "UPDATE  statistic_user SET status=%s WHERE userId=%s"
-        self.cursor.execute(delete_query, (0, userId))
+        delete_query = "UPDATE  statistic_user SET status=%s , updated_by=%s, updated_at=%s WHERE userId=%s"
+        self.cursor.execute(delete_query, (0, updated_by, updated_at, userId))
 
-    def update_usergroup(self, userId, user_group):
-        """
-            Function to update_usergroup
-            :param userId:
-            :param user_group:
-        """
 
-        update_query = " UPDATE statistic_user SET user_group=%s WHERE userId=%s"
-        self.cursor.execute(update_query, (user_group, userId))
-
-    def update_userrole(self, userId, user_role):
+    def update_userrole(self, userId, user_role, updated_by, updated_at):
         """
             Function to update_user role
             :param user_role:
             :param userId:
         """
 
-        update_query = "UPDATE statistic_user SET user_role=%s WHERE userId=%s"
-        self.cursor.execute(update_query, (userId, user_role))
+        update_query = "UPDATE statistic_user SET user_role=%s, updated_by=%s, updated_at=%s WHERE userId=%s"
+        self.cursor.execute(update_query, ( user_role,updated_by,updated_at,userId))
 
     def update_country(self, userId, country):
         """
@@ -530,16 +626,7 @@ class DatabaseConnection:
         update_query = "UPDATE statistic_user SET country=%s WHERE userId=%s"
         self.cursor.execute(update_query, (userId, country))
 
-    def update_user_name(self, userId, name):
-        """
-            Function to update_user name
-            :param userId:
-            :param name:
-        """
-
-        update_query = "UPDATE statistic_user SET name=%s WHERE userId=%s"
-        self.cursor.execute(update_query, (userId, name))
-
+    
 
     #################################################################################################
     #                                                                                               #

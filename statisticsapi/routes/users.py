@@ -27,7 +27,15 @@ def fetch_all_users():
     """
     return User_Controller.fetch_all_users()
 
+@app.route("/api/v1/users/admindetails", methods=['GET'])
+@jwt_required
+def get_specific_user():
+    """
+        Function fetch specific user
+        :return user:
+    """
 
+    return User_Controller.get_specific_user()
 
 @app.route("/api/v1/users/<int:userId>", methods=['GET'])
 @jwt_required

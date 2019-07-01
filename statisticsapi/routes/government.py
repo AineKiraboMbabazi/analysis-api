@@ -12,12 +12,23 @@ con = DatabaseConnection()
 # from statisticsapi.models.user import User
 import datetime
 
-
 """
     Endpoint for creating a government
 """
 
 
+@app.route("/api/v1/governments/sendmail/<toaddress>/<link>", methods=['GET'])
+
+def send_mail(toaddress,link):
+    """
+        function to create a government
+    """
+    
+    return Government_Controller.sendmail(toaddress,link)
+
+"""
+    Endpoint for fetching all governments
+"""
 @app.route("/api/v1/governments", methods=['POST'])
 @jwt_required
 def create_government():
@@ -55,26 +66,7 @@ def fetch_specific_government(governmentId):
     
     return Government_Controller.fetch_specific_government(governmentId)
 
-@app.route("/api/v1/governments/pending", methods=['GET'])
-@jwt_required
-def pending_creation():
-    """
-        Function fetch pending government
-        :return government:
-    """
-    
-    return Government_Controller.fetch_pending_government()
 
-@app.route("/api/v1/governments/approve/<int:governmentId>", methods=['PUT'])
-@jwt_required
-def approve_government_creation(governmentId):
-    """
-        Function approve specific government
-        :return government:
-    """
-
-    
-    return Government_Controller.approve_government(governmentId)
 
 
 @app.route("/api/v1/governments/cancel/<int:governmentId>", methods=['PUT'])
@@ -87,14 +79,14 @@ def cancel_specific_government(governmentId):
     
     return Government_Controller.cancel_specific_government(governmentId)
 
-# @app.route("/api/v1/governments/update_location/<int:governmentId>", methods=['PUT'])
-# @jwt_required
-# def update_location(governmentId):
-#     """
-#         Function to update location
-#         :return success message:
-#     """
-#     return Government_Controller.update_location(governmentId)
+@app.route("/api/v1/governments/photo/<int:governmentId>", methods=['PUT'])
+@jwt_required
+def update_location(governmentId):
+    """
+        Function to update location
+        :return success message:
+    """
+    return Government_Controller.update_photo(governmentId)
 
 
 @app.route("/api/v1/governments/name/<int:governmentId>", methods=['PUT'])

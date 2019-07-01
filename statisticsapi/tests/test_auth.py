@@ -25,6 +25,7 @@ class TestAuth(TestBase):
         self.sign_up()
         user_login = self.app_client.post("api/v1/auth/login", content_type="application/json", 
             data=json.dumps(self.user_login_data))
+        
         self.assertEqual(user_login.status_code, 200)
         response = json.loads(user_login.data)
         self.assertEqual(response['message'], 'login successful')
@@ -51,7 +52,7 @@ class TestAuth(TestBase):
             data=json.dumps(self.user_login_datae))
         self.assertEqual(user_login.status_code, 401)
         response = json.loads(user_login.data)
-        self.assertEqual(response['message'], 'You entered an invalid email or theemail is missing')
+        self.assertEqual(response['message'], 'You entered an invalid email or the email is missing')
         
 
     def test_cant_login_user_with_invalid_password(self):
@@ -97,11 +98,7 @@ class TestAuth(TestBase):
     #############################################################################################
 
     def test_can_reset_password_successfully(self):
-        self.sign_up()
-        user_login = self.app_client.post("api/v1/auth/login", content_type="application/json", 
-            data=json.dumps(self.user_login_data))
-        self.assertEqual(user_login.status_code, 200)
-        
+        self.sign_up() 
         recover = self.app_client.post("/api/v1/auth/forgot_password", content_type="application/json", 
             data=json.dumps(self.recover))
         self.assertEqual(recover.status_code, 200)
@@ -114,7 +111,7 @@ class TestAuth(TestBase):
         user_login = self.app_client.post("api/v1/auth/login", content_type="application/json", 
             data=json.dumps(self.user_login_data))
         self.assertEqual(user_login.status_code, 200)
-        self.app_client.put("api/v1/users/delete/1", content_type="application/json",headers={'Authorization': f'Bearer {token}'} )
+        self.app_client.put("api/v1/users/delete/2", content_type="application/json",headers={'Authorization': f'Bearer {token}'} )
         
         recover = self.app_client.post("/api/v1/auth/forgot_password", content_type="application/json", 
             data=json.dumps(self.recover))
