@@ -13,6 +13,7 @@ from email.mime.text import MIMEText
 from .users import User_Controller,generate_hash
 con = DatabaseConnection()
 
+# function to generate random admin password
 def generate_password():
         password = PasswordGenerator()
         password.excludeschars = "!$%^,>+.*_-()#&~`?=" 
